@@ -2,6 +2,7 @@
 /notebooks
 
 # Auto-saves
+*.ipynb
 **/.ipynb_checkpoints/**
 
 # Ignore most images
