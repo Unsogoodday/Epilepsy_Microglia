@@ -1,0 +1,6 @@
+# kumar et al (2022) epileptic microglia
+GSE201048_raw, https://www.ncbi.nlm.nih.gov/geo/download/?acc=GSE201048&format=file, kumar
+
+# ferreira et al (2025) human microglia atlas
+GSE157277_raw, https://www.ncbi.nlm.nih.gov/geo/download/?acc=GSE157277&format=file, papparlardo
+GSE153807_raw, https://www.ncbi.nlm.nih.gov/geo/download/?acc=GSE153807&format=file, thrupp
