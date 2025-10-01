@@ -1,0 +1,22 @@
+# Ignore Colab notebooks
+/notebooks
+
+# Auto-saves
+**/.ipynb_checkpoints/**
+
+# Ignore most images
+*.png
+*.jpg
+*.pdf
+
+# Ignore other big binaries (global)
+*.gz
+*.h5ad
+*.h5
+*.loom
+*.npz
+*.npy
+*.pdf
+*.tar
+*.tar.gz
+*.zip
