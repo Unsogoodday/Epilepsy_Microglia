@@ -1,8 +1,4 @@
-# Ignore Colab notebooks
-/notebooks
-
 # Auto-saves
-*.ipynb
 **/.ipynb_checkpoints/**
 
 # Ignore most images
@@ -21,3 +17,6 @@
 *.tar
 *.tar.gz
 *.zip
+
+# Track notebooks explicitly
+!notebooks/*.ipynb
