@@ -2,5 +2,13 @@
 GSE201048_raw, https://www.ncbi.nlm.nih.gov/geo/download/?acc=GSE201048&format=file, kumar
 
 # ferreira et al (2025) human microglia atlas
-GSE157277_raw, https://www.ncbi.nlm.nih.gov/geo/download/?acc=GSE157277&format=file, papparlardo
+### GSE157277_raw, https://www.ncbi.nlm.nih.gov/geo/download/?acc=GSE157277&format=file, papparlardo > FASTQ라 일단 배제
 GSE153807_raw, https://www.ncbi.nlm.nih.gov/geo/download/?acc=GSE153807&format=file, thrupp
+
+# pai et al (2022) epileptic glia 
+GSE140393_raw, https://www.ncbi.nlm.nih.gov/geo/download/?acc=GSE140393&format=file", pai
+
+# ayhan et al (2021) hippocampal single cell
+### GSE160189_raw, https://www.ncbi.nlm.nih.gov/geo/download/?acc=GSE160189&format=file&file=GSE160189%5FHippo%5FCounts%2Ecsv%2Egz, ayhan > backup
+
+
