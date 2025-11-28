@@ -1,8 +1,8 @@
 name: scenv
 channels:
+  - defaults
   - conda-forge
   - bioconda
-  - defaults
 dependencies:
   - python=3.10
   - pip
@@ -24,5 +24,3 @@ dependencies:
       - liana==0.1.7
       - harmonypy
       - symphonypy
-
-
