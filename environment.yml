@@ -1,4 +1,4 @@
-name:epilepsy_microglia
+name: scenv
 channels:
   - conda-forge
   - bioconda
@@ -24,4 +24,5 @@ dependencies:
       - liana==0.1.7
       - harmonypy
       - symphonypy
+
 
