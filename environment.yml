@@ -8,14 +8,14 @@ dependencies:
   - pip
   - numpy
   - pandas
-  - scipy==1.15.3
+  - scipy=1.15.3
   - matplotlib
   - seaborn
   - scikit-learn
   - jupyterlab
-  - anndata==0.11.4
-  - scanpy==1.10.2
-  - pytorch==1.3
+  - anndata=0.11.4
+  - scanpy=1.10.2
+  - pytorch=1.3
   - polars
   - statsmodels
   - pymer4
@@ -24,3 +24,4 @@ dependencies:
       - liana==0.1.7
       - harmonypy
       - symphonypy
+
