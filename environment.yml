@@ -8,7 +8,7 @@ dependencies:
   - pip
   - numpy
   - pandas
-  - scipy=1.15.3
+  - scipy
   - matplotlib
   - seaborn
   - scikit-learn
@@ -24,4 +24,5 @@ dependencies:
       - liana==0.1.7
       - harmonypy
       - symphonypy
+
 
