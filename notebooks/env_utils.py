@@ -1,0 +1,36 @@
+from pathlib import Path
+import os
+
+def detect_env():
+    # Colab
+    if (
+        "COLAB_RELEASE_TAG" in os.environ
+        or os.path.exists("/content")
+    ):
+        return "colab"
+
+    # code-server/VS Code
+    if (
+        "VSCODE_IPC_HOOK_CLI" in os.environ
+        or os.environ.get("TERM_PROGRAM") == "vscode"
+    ):
+        return "code-server"
+    
+    return "local"
+
+def get_paths(PROJECT_NAME):
+    env = detect_env()
+
+    if env == "colab":
+        base = Path("/content/drive/MyDrive/data")
+    elif env == "code-server":
+        base = Path("/home/neuro_demo_research/data_from_drive")
+    else:
+        base = Path("~/neuro_demo_research").expandsuer()
+
+    return {
+        "BASE" : base / PROJECT_NAME,
+        "RAW" : base / PROJECT_NAME / "raw",
+        "PROCESSED" : base / PROJECT_NAME / "processed",
+        "PLOTS" : base / PROJECT_NAME / "plots",
+    }
