@@ -1,53 +1,63 @@
 from pathlib import Path
-from env_utils import detect_env, get_paths
-import os
-import tarfile
-import glob
+from env_utils import get_temp_dir, extract_tar
 import scanpy as sc
-import anndata as ad
+import shutil
 
-def sc_unpack_tar(RAW_DIR, FCODE):
-    # unpack tar.gz to adata 
-    env = detect_env()
-    if(env == "Colab"):
-        TEMP_DIR = "/contents/data"
-    elif(env == "code-server"):
-        TEMP_DIR = "/home/neuro_demo_research/temp_data"
+def sc_needs_transpose(adata):
+    if adata.X.shape == (adata.n_obs, adata.n_vars):
+        return False
+    elif adata.X.shape == (adata.n_vars, adata.n_obs):
+        return True
     else:
-        TEMP_DIR = Path("~/neuro_demo_research").expandsuer()
-    os.makedirs(TEMP_DIR, exist_ok=True)
+        raise ValueError("AnnData X shape incompatible with obs/var")
 
-    # unpack tar from RAW_DIR
-    src = os.path.join(RAW_DIR, f"{FCODE}.tar.gz")
-    with tarfile.open(src, "r:gz") as tar:
-        for member in tar.getmembers():
-            member.name = os.path.basename(member.name)
-            tar.extract(memeber, TEMP_DIR)
+def sc_fix_orientation(adata):
+    if sc_needs_transpose(adata):
+        adata = adata.T.copy()
+        adata.var_names_make_unique()
+    return adata
+
+def sc_load_fix_h5ad(path):
+    path = Path(path)
+    adata = sc.read_h5ad(path)
+    adata = sc_fix_orientation(adata)
+    adata.obs["source_file"] = path.stem
+    return adata
+
+def sc_concat_adata(adatas, label="sample", merge="first"):
+    adata = sc.concat(
+        adatas,
+        label=label,
+        merge=merge
+    )
+    adata.obs_names_make_unique()
+    return adata
+
+def sc_compile_from_tar(tar_path, label="sample", merge="first"):
+    tar_path = Path(tar_path)
+    temp_dir = get_temp_dir()
+    try:
+        extract_tar(tar_path, temp_dir)
+        paths = sorted(temp_dir.glob("*.h5ad"))
+
+        if not paths:
+            raise FileNotFoundError("No .h5ad files found in tar")
+
+        adatas = {p.stem: sc_load_fix_h5ad(p) for p in paths}
+        adata = sc_concat_adata(adatas, label=label, merge=merge)
+        return adata
     
-    adatas = {}
+    finally:
+        shutil.rmtree(temp_dir, ignore_errors=True)
 
-    # mark each j5ad file with sample_id
-    for file in glob.glob(os.path.join(TEMP_DIR, "*.h5ad")):
-        sample_adata = sc.read_h5ad(file)
-        sample_adata.var_names_make_unique()
-        sample_id = sample_adata.obs["sample_id"].iloc[0]
-        adatas[sample_id] = sample_adata
 
-    # concatenate
-    if adatas:
-        adata = sc.concat(
-            adatas.values(),
-            label="sample_id",
-            keys=adatas.keys(),
-            merge="same"
-        )
-        adata.obs_names_make_unique()
-        print(adata.obs["sample_id"].value_counts())
-        
-        # save adata back to RAW_DIR
-        adata.write(os.path.join(RAW_DIR, f"{FCODE}.h5ad"))
-    else:
-        print("No .h5ad files found in the directory.")
+def sc_compile_from_dir(dir_path, label="sample", merge="first"):
+    dir_path = Path(dir_path)
+    paths = sorted(dir_path.glob("*.h5ad"))
 
-    os.remove(TEMP_DIR)
+    if not paths:
+        raise FileNotFoundError("No .h5ad files found")
 
+    adatas = {p.stem: sc_load_fix_h5ad(p) for p in paths}
+    adata = sc_concat_adata(adatas, label=label, merge=merge)
+    return adata
