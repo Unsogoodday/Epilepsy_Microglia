@@ -1,5 +1,7 @@
 from pathlib import Path
 import os
+import tarfile
+import glob
 
 def detect_env():
     # Colab
@@ -22,7 +24,7 @@ def get_paths(PROJECT_NAME):
     env = detect_env()
 
     if env == "colab":
-        base = Path("/content/drive/MyDrive/data")
+        base = Path("/content/drive/MyDrive/datas")
     elif env == "code-server":
         base = Path("/home/neuro_demo_research/data_from_drive")
     else:
