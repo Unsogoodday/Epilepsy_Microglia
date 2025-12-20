@@ -16,3 +16,4 @@ igraph
 polars
 statsmodels
 pymer4
+mygene
