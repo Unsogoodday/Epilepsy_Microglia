@@ -30,3 +30,4 @@ dependencies:
       - polars
       - statsmodels
       - pymer4
+      - mygene
