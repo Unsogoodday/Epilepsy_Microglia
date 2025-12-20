@@ -1,6 +1,10 @@
 # Auto-saves
 **/.ipynb_checkpoints/**
 
+# Python binaries
+__pycache__/
+*.py[cod]
+
 # Ignore most images
 *.png
 *.jpg
