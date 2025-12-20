@@ -1,5 +1,6 @@
-# Auto-saves
+# Auto-saves and logs
 **/.ipynb_checkpoints/**
+lightning_logs/
 
 # Python binaries
 __pycache__/
