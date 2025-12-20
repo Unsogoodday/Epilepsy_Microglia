@@ -17,7 +17,12 @@ def sc_fix_orientation(adata):
         adata.var_names_make_unique()
     return adata
 
-def sc_load_fix_h5ad(path):
+def sc_load_fix_h5ad(path): # import to notebook 
+    """
+        single file i/o
+        input : h5ad path (str)
+        return : adata
+    """
     path = Path(path)
     adata = sc.read_h5ad(path)
     adata = sc_fix_orientation(adata)
@@ -33,7 +38,12 @@ def sc_concat_adata(adatas, label="sample", merge="first"):
     adata.obs_names_make_unique()
     return adata
 
-def sc_compile_from_tar(tar_path, label="sample", merge="first"):
+def sc_compile_from_tar(tar_path, label="sample", merge="first"): # import to notebook 
+    """
+        directory compilation (tar)
+        input : tar.gz path (str)
+        return : concatenated adata
+    """
     tar_path = Path(tar_path)
     temp_dir = get_temp_dir()
     try:
@@ -51,7 +61,12 @@ def sc_compile_from_tar(tar_path, label="sample", merge="first"):
         shutil.rmtree(temp_dir, ignore_errors=True)
 
 
-def sc_compile_from_dir(dir_path, label="sample", merge="first"):
+def sc_compile_from_dir(dir_path, label="sample", merge="first"): # import to notebook 
+    """
+        directory compilation (h5ad)
+        input : dir (.h5ad file directory) path (str)
+        return : concatenated adata
+    """
     dir_path = Path(dir_path)
     paths = sorted(dir_path.glob("*.h5ad"))
 

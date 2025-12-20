@@ -1,0 +1,27 @@
+
+
+
+**2. Preprocess**
+
+1. Mygene annotation
+(Optional : 1-1. Annotation sanity check)
+2. QC (Basic mt/rps/hb HVG subset) + Basic downstream pre-scVI
+3. Setup SCVI model on HVGs
+
+-----------------------------------------
+*Logs*
+
+20251020 Create RERUN_PREPROCESS : Unpack .tar.gz to read and concatenate.
+
+20251020 Revise ANNOTATE_MYGENE : Fix logic flow & memory efficiency. Drop sanity check : ~30% of dropout is allowed
+
+20251020 Revise SCVI_SETUP : Fix learning parameters. Reduce keys to prevent overfitting
+
+20251025 Revise HVG SELECTION : Subset hvgs first before scVI for robust results
+
+20251102 Creat QC_SCHEME : Remove outlier cells/genes with 3MAD rule
+(filter cell/gene -> MT/RPS/HB/total counts/pct counts masking)
+
+20251108 FIx QC_SCHEME : Manual filter_cells/genes to save memory
+
+20251216 Refactoring : fixed code flow and cleared paths
