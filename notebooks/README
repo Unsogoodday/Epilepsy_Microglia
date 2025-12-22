@@ -1,5 +1,11 @@
+**1. Download single cell metadata**
 
+ Since single cell metadatas take on different data types including .mtx, .csv and .tsv, an integrated downloading process is efficient for further research. Below are brief processes to download the desired data, respectively.
 
+ In Case of .mtx (mostly from 2020 or later), follow A.
+ For .tsv, follow B-1 through 3. For .csv, skip B-2. Concatenation takes considerable data storage. When it comes short, don't follow B-4. Otherwise follow B-4 to merge data into one.
+
+ WARNING : Always set raw_dir in /contents/, not in your drive. It may cause undesirable storage overflow.
 
 **2. Preprocess**
 
