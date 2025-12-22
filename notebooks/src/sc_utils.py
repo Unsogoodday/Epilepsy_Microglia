@@ -1,7 +1,126 @@
 from pathlib import Path
 from env_utils import get_temp_dir, extract_tar
 import scanpy as sc
-import shutil
+import shutil, subprocess
+
+"""
+    Download .h5ad files from link : 
+    sc_download_mtx : download mtx-type files
+    sc_download_tsv : download tsv-type files
+    sc_download_csv : download csv-type files
+
+    Load AnnData object from .h5ad files :
+    sc_load_fix_h5ad : single dataset i/o
+    sc_compile_from_dir : multiple datasets concatenation
+    sc_compile_from_tar : multiple datasets concatenation (packed in tar)
+
+"""
+
+FILE_MAP = {
+    "matrix.mtx": "matrix.mtx",
+    "barcodes.tsv": "barcodes.tsv",
+    "genes.tsv": "features.tsv",
+    "features.tsv": "features.tsv",
+}
+
+def sc_process_downloaded_10x_mtx(
+    download_dir: Path,
+    raw_dir: Path,
+    label: str, 
+    sample_meta: dict,
+    cleanup: bool = True
+): # import to notebook
+    
+    groups = group_by_prefix(download_dir)
+
+    for sample_id, files in groups.items():
+       sample_dir = normalize_sample_files(files, raw_dir, sample_id)
+       out_file = build_and_save_anndata(
+        sample_dir,
+        raw_dir,
+        label,
+        sample_id,
+        sample_meta
+        )
+       print(f"Saved {out_file}")
+       if cleanup:
+        shutil.rmtree(sample_dir)
+
+def download_tar_from_link(
+    filename: str,
+    link: str,
+    download_dir: Path,
+) -> None:
+    subprocess.run(["curl", "-L", link, "-o", f"{filename}.tar"], check=True)
+    subprocess.run(["tar", "-xf", f"{filename}.tar", "-C", download_dir], check=True)
+    Path(f"{filename}.tar").unlink()
+
+
+def normalize_10x_filename(filename: str) -> str | None:
+    for key, target in FILE_MAP.items():
+        if key in filename:
+            if filename.endswith(".gz"):
+                return f"{target}.gz"
+            return target
+    return None
+
+
+def group_by_prefix(download_dir: Path) -> dict[str, list[Path]]:
+    groups: dict[str, list[Path]] = {}
+    for f in download_dir.iterdir():
+        if not f.is_file():
+            continue
+        prefix = f.name.split("_")[0]
+        groups.setdefault(prefix, []).append(f)
+    return groups
+
+def normalize_sample_files(
+    files: list[Path],
+    raw_dir: Path,
+    sample_id: str
+):
+    sample_dir = raw_dir / sample_id
+    sample_dir.mkdir(parents=True, exist_ok=True)
+
+    for f in files:
+        normalized = normalize_10x_filename(f.name)
+        dest = sample_dir / (normalized or f.name)
+        shutil.move(f, dest)
+    
+    return sample_dir
+
+def build_and_save_anndata(
+    sample_dir: Path,
+    raw_dir: Path,
+    label: str, 
+    sample_id: str, 
+    sample_meta: dict,
+):
+    ad = sc.read_10x_mtx(
+        sample_dir,
+        var_names="gene_ids",
+        make_unique=True,
+    )
+    
+    if sample_id in sample_meta:
+        for k, v in sample_meta[sample_id].items():
+            ad.obs[k] = v if isinstance(v, (list, tuple)) else [v] * ad.n_obs
+    else:
+        print(f"Warning: no metadata for {sample_id}")
+    
+    out_file = raw_dir / f"{label}_{sample_id}.h5ad"
+    ad.write(out_file)
+    return out_file
+
+
+def sc_download_tsv(filename: str, link, download_dir): # import to notebook
+
+
+def sc_download_csv(filename: str, link, download_dir): # import to notebook
+
+
+def tsv_to_csv():
+
 
 def sc_needs_transpose(adata):
     if adata.X.shape == (adata.n_obs, adata.n_vars):
