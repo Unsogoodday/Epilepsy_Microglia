@@ -1,4 +1,4 @@
-from sc_io import download_tar_from_link, build_and_save_anndata
+from sc_io import download_dataset, build_and_save_anndata
 from sc_transform import fix_orientation
 
 from sc_annotations import cleanup_annotation, map_ensembl_to_symbol, guardrail_unmapped_hvgs
@@ -36,16 +36,17 @@ def sc_download_mtx(
     raw_dir: Path,
     label: str,
     sample_meta: dict,
+    is_tar: bool,
 ) -> None:
     """
-    Orchestrator for downloading, extracting, and building AnnData
-    from 10x-style tar archives.
+    Orchestrator for downloading datasets and building AnnData
+    from 10x-style matrix directories.
     """
-
-    download_tar_from_link(
+    download_dataset(
         filename=filename,
         link=link,
         download_dir=download_dir,
+        is_tar=is_tar,
     )
 
     build_and_save_anndata(
