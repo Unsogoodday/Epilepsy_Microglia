@@ -79,23 +79,102 @@ def build_and_save_anndata(
         out_file = raw_dir / f"{label}_{sample_id}.h5ad"
         ad.write(out_file)       
 
-def tsv_to_csv(
-    filename: str,
-    download_dir: Path,
-    out_dir=download_dir,
-    remove_original=True,
-):
-    for tsv_path in download_dir.glob("*tsv"):
-        basename = os.path.splitext(os.path.basename(tsv_path))[0]
-        csv_path = os.path.join(out_dir, f"{basename}.csv")
-        try: 
-            df = pd.read_csv(tsv_path, sep="\t")
-            df.to_csv(csv_path, index=False)
-            if(remove_original):
-                os.remove(tsv_path)
-                print(f"Converted {tsv_path} -> {csv_path}, deleted original")
-            else:
-                print(f"Converted {tsv_path} -> {csv_path}, kept original")
-        except Exception as e:
-            print(f"Error processing {tsv_path}: {e}")
+from pathlib import Path
+import pandas as pd
 
+def tsv_to_csv(
+    *,
+    download_dir: Path,
+    out_dir: Path | None = None,
+    remove_original: bool = True,
+) -> None:
+    """
+    Convert all TSV files in download_dir to CSV.
+
+    Parameters
+    ----------
+    download_dir : Path
+        Directory containing .tsv files.
+    out_dir : Path | None
+        Output directory for .csv files. Defaults to download_dir.
+    remove_original : bool
+        Whether to delete .tsv files after successful conversion.
+    """
+
+    out_dir = out_dir or download_dir
+    out_dir.mkdir(parents=True, exist_ok=True)
+
+    for tsv_path in download_dir.glob("*.tsv"):
+        csv_path = out_dir / f"{tsv_path.stem}.csv"
+
+        df = pd.read_csv(tsv_path, sep="\t")
+        df.to_csv(csv_path, index=False)
+
+        if remove_original:
+            tsv_path.unlink()
+
+
+def check_csv_orientation(
+    csv_path: Path,
+    n_check: int = 5,
+) -> str:
+    """
+    Infer gene orientation in a CSV file.
+
+    Returns
+    -------
+    str
+        One of {"genes_as_rows", "genes_as_columns", "unknown"}
+    """
+    csv_path = Path(path)
+    if not csv_path.exists():
+        raise FileNotFoundError(csv_path)
+
+    df = pd.read_csv(csv_path, index_col=0, nrows=n_check)
+
+    if df.empty:
+        raise ValueError(f"{csv_path} is empty or unreadable")
+
+    row_label = str(df.index[0])
+    col_label = str(df.columns[0])
+
+    def looks_like_gene(label: str) -> bool:
+        return (
+            label.startswith("ENSG")
+            or label.startswith("MT-")
+            or label.replace("-", "").isalnum()
+        )
+
+    row_gene_like = looks_like_gene(row_label)
+    col_gene_like = looks_like_gene(col_label)
+
+    if row_gene_like and not col_gene_like:
+        return "genes_as_rows"
+    if col_gene_like and not row_gene_like:
+        return "genes_as_columns"
+
+    return "unknown"
+
+from sc_transform import fix_orientation
+def csv_to_h5ad(
+    *,
+    csv_path: Path,
+    raw_dir: Path,
+    label: str, 
+    sample_meta: dict,
+):
+    for f in csv_path.glob("*.csv"):
+        sample_id = f.stem
+        ori = check_csv_orientation(f)
+
+        if ori == "genes_as_rows":
+            adata = sc.read_csv(f, first_column_names=True)
+            adata = fix_orientation(adata)
+        elif ori == "genes_as_columns":
+            adata = sc.read_csv(f, first_column_names=True)
+        else:
+            raise ValueError(f"Unknown orientation for {f}")
+        
+        adata.obs["sample_id"] = sample_id
+        
+        # I have no idea how to manage the 'saving' part
