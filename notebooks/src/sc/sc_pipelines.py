@@ -17,6 +17,10 @@ import matplotlib as plt
     - sc_download_csv : download csv type data
 
     qc
+    - sc_plot_qc_mt_rb_hb : compute mt, rb, hb gene pct and plot
+    - sc_build_qc_mask : build qc mask with no. of MAD, mt/rb/hb threshold
+    - sc_apply_qc_mask : apply the qc mask
+    - sc_plot_qc_distributions : plot qc changes before/after qc mask
 
     annotation 
     - sc_annotate_mygene : match ENSEMBL -> SYMBOL via mygene
