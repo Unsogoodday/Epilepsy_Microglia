@@ -4,7 +4,7 @@ import scanpy as sc
 import AnnData as ad
 from scipy.stats import fisher_exact
 
-def cleanup_annotation(
+def _cleanup_annotation(
     adata,
     old_id,
     new_id="ensembl_id",
@@ -36,7 +36,7 @@ def cleanup_annotation(
     return adata
 
 
-def map_ensembl_to_symbol(
+def _map_ensembl_to_symbol(
     adata,
     ensembl_key="ensembl_id",
     symbol_key="gene_symbol",
@@ -87,7 +87,7 @@ def map_ensembl_to_symbol(
 
     return adata
 
-def guardrail_unmapped_hvgs(
+def _guardrail_unmapped_hvgs(
     adata,
     hvg_key="highly_variable",
     mapping_key="mapping_status",
@@ -144,7 +144,7 @@ def guardrail_unmapped_hvgs(
     }
     return decision, report
 
-def annotate_metadata(
+def _annotate_metadata(
     adata: ad.AnnData,
     metadata: dict,
 ) -> ad.AnnData:

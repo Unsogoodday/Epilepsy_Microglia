@@ -46,15 +46,4 @@ def get_temp_dir():
     else:
         return Path("~/neuro_demo_research").expanduser()
 
-def extract_tar(src_tar: Path, dst_dir: Path):
-    dst_dir.mkdir(parents=True, exist_ok=True)
 
-    with tarfile.open(src_tar, "r:gz") as tar:
-        for member in tar.getmembers():
-            if not member.isfile():
-                continue  # skip dirs, symlinks, etc.
-
-            target = dst_dir / Path(member.name).name
-
-            with tar.extractfile(member) as src, open(target, "wb") as dst:
-                dst.write(src.read())

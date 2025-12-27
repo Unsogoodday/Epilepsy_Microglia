@@ -1,8 +1,22 @@
 from pathlib import Path
-from env_utils import get_temp_dir, extract_tar
+from env_utils import get_temp_dir
 import shutil, subprocess, gzip
 
-def download_tar_from_link(
+def _extract_tar(src_tar: Path, dst_dir: Path):
+    dst_dir.mkdir(parents=True, exist_ok=True)
+
+    with tarfile.open(src_tar, "r:gz") as tar:
+        for member in tar.getmembers():
+            if not member.isfile():
+                continue  # skip dirs, symlinks, etc.
+
+            target = dst_dir / Path(member.name).name
+
+            with tar.extractfile(member) as src, open(target, "wb") as dst:
+                dst.write(src.read())
+
+
+def _download_tar_from_link(
     filename: str,
     link: str,
     download_dir: Path,
@@ -21,7 +35,7 @@ def download_tar_from_link(
     tar_path.unlink()
 
 
-def download_from_link(
+def _download_from_link(
     filename: str,
     link: str,
     download_dir: Path,
@@ -34,7 +48,7 @@ def download_from_link(
         check=True
     )
 
-def gunzip_decompress(
+def _gunzip_decompress(
     *,
     path: Path,
     remove_original: bool = True,
@@ -61,7 +75,7 @@ def gunzip_decompress(
     return decompressed
 
 
-def tsv_to_csv(
+def _tsv_to_csv(
     *,
     path: Path,
     out_dir: Path | None = None,
@@ -90,3 +104,4 @@ def tsv_to_csv(
         path.unlink()
 
     return csv_path
+

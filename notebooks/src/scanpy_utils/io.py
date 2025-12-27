@@ -3,21 +3,8 @@ import scanpy as sc
 import pandas as pd
 import shutil, subprocess, gzip
 
-"""
-    1. download_dataset
-    (csv인 경우) : normalize_text_files
-    2. build_mtx/csv_anndata
-
-    여기까지가 i/o의 영역이고
-    3. orientation fix (need_transpose) -> 재활용
-
-
-    여기까지 12/26 작업했고
-    4. Metadata annotation은 sc_annotations에 만들 것!
-
-"""
-from files_utils import download_tar_from_link, download_from_link
-def download_dataset(
+from files_utils import _download_tar_from_link, _download_from_link
+def _download_dataset(
     *,
     filename: str,
     link: str,
@@ -25,12 +12,12 @@ def download_dataset(
     is_tar: bool,
 ) -> None:
     if is_tar:
-        download_tar_from_link(filename, link, download_dir)
+        _download_tar_from_link(filename, link, download_dir)
     else:
-        download_from_link(filename, link, download_dir)
+        _download_from_link(filename, link, download_dir)
 
-from files_utils import gunzip_decompress, tsv_to_csv
-def normalize_text_files(
+from files_utils import _gunzip_decompress, _tsv_to_csv
+def _normalize_text_files(
     download_dir: Path,
     remove_original: bool,
 ) -> list[Path]:
@@ -46,8 +33,8 @@ def normalize_text_files(
         if not path.is_file():
             continue
 
-        path = gunzip_decompress(path=path, remove_original=remove_original)
-        path = tsv_to_csv(path=path, out_dir=download_dir, remove_original=remove_original)
+        path = _gunzip_decompress(path=path, remove_original=remove_original)
+        path = _tsv_to_csv(path=path, out_dir=download_dir, remove_original=remove_original)
         csv_outputs.append[path]
 
     if not csv_outputs:
@@ -58,7 +45,7 @@ def normalize_text_files(
     return csv_outputs
 
 
-def build_mtx_anndata(
+def _build_mtx_anndata(
     download_dir: Path,
     raw_dir: Path,
     label: str, 
@@ -98,7 +85,7 @@ def build_mtx_anndata(
 
     return outputs   
 
-def build_csv_anndata(
+def _build_csv_anndata(
     files: list[Path],
     raw_dir: Path,
     label: str,
