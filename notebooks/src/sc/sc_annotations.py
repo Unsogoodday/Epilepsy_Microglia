@@ -143,3 +143,38 @@ def guardrail_unmapped_hvgs(
         "reasons": reasons,
     }
     return decision, report
+
+def annotate_metadata(
+    adata: ad.AnnData,
+    metadata: dict,
+) -> ad.AnnData:
+    """
+    Annotate a single AnnData object with metadata.
+
+    Parameters
+    ----------
+    adata
+        AnnData object to annotate
+    metadata
+        Dictionary of metadata to write into adata.obs
+
+    Returns
+    -------
+    AnnData
+        Annotated AnnData object
+    """
+    n_obs = adata.n_obs
+
+    for key, value in metadata.items():
+        if isinstance(value, (list, tuple, pd.Series)):
+            if len(value) != n_obs:
+                raise ValueError(
+                    f"Metadata field '{key}' has length {len(value)}, "
+                    f"expected {n_obs}"
+                )
+            adata.obs[key] = value
+        else:
+            # broadcast scalar
+            adata.obs[key] = [value] * n_obs
+
+    return adata

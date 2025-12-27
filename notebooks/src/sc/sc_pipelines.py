@@ -12,9 +12,8 @@ import matplotlib as plt
     Import directly to notebook
 
     io
-    - sc_download_mtx : download mtx type data
-    - sc_download_tsv : download tsv type data
-    - sc_download_csv : download csv type data
+    - sc_download_mtx : download mtx type data, fix orientation, write in raw_dir
+    - sc_download_tsv : download tsv type data, fix orientation, write in raw_dir
 
     qc
     - sc_plot_qc_mt_rb_hb : compute mt, rb, hb gene pct and plot
@@ -48,17 +47,57 @@ def sc_download_mtx(
         download_dir=download_dir,
         is_tar=is_tar,
     )
-
-    build_and_save_anndata(
+    adata_paths = build_mtx_anndata(
         download_dir=download_dir,
         raw_dir=raw_dir,
         label=label,
-        sample_meta=sample_meta,
     )
+    for f in adata_paths:
+        if f.suffix != ".h5ad":
+            raise ValueError(f"{f} is not a proper h5ad format")
+        adata=sc.read_h5ad(f)
+        adata=fix_orientation(adata)
+        adata.write(f)
+    
 
-def sc_download_tsv(filename: str, link, download_dir):
+def sc_download_tsv_csv(
+    *,
+    filename: str,
+    link: str,
+    download_dir: Path,
+    raw_dir: Path,
+    label: str,
+    sample_meta: dict,
+    is_tar: bool,
+    remove_original: bool=True,
+) -> None:
+    """
+    Orchestrator for downloading datasets and building AnnData
+    from csv/tsv files
+    """
+    download_dataset(
+        filename=filename,
+        link=link,
+        download_dir=download_dir,
+        is_tar=is_tar,
+    )
+    csv_paths = normalize_text_files(
+        download_dir=download_dir,
+        remove_original=remove_original,
+    )
+    h5ad_paths = build_csv_anndata(
+        files=csv_paths,
+        raw_dir=raw_dir,
+        label=label,
+    )
+    for f in h5ad_paths:
+        if f.suffix != ".h5ad":
+            raise ValueError(f"{f} is not a proper h5ad format")
+        adata=sc.read_h5ad(f)
+        adata=fix_orientation(adata)
+        adata.write(f)
+    
 
-def sc_download_csv(filename: str, link, download_dir):
 
 def sc_load_fix_h5ad(path):
     """
@@ -68,7 +107,6 @@ def sc_load_fix_h5ad(path):
     """
     path = Path(path)
     adata = sc.read_h5ad(path)
-    adata = sc_fix_orientation(adata)
     adata.obs["source_file"] = path.stem
     return adata
 

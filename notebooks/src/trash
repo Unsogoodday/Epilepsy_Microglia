@@ -1,0 +1,107 @@
+def check_csv_orientation(
+    csv_path: Path,
+    n_check: int = 5,
+) -> str:
+    """
+    Infer gene orientation in a CSV file.
+
+    Returns
+    -------
+    str
+        One of {"genes_as_rows", "genes_as_columns", "unknown"}
+    """
+    csv_path = Path(path)
+    if not csv_path.exists():
+        raise FileNotFoundError(csv_path)
+
+    df = pd.read_csv(csv_path, index_col=0, nrows=n_check)
+
+    if df.empty:
+        raise ValueError(f"{csv_path} is empty or unreadable")
+
+    row_label = str(df.index[0])
+    col_label = str(df.columns[0])
+
+    def looks_like_gene(label: str) -> bool:
+        return (
+            label.startswith("ENSG")
+            or label.startswith("MT-")
+            or label.replace("-", "").isalnum()
+        )
+
+    row_gene_like = looks_like_gene(row_label)
+    col_gene_like = looks_like_gene(col_label)
+
+    if row_gene_like and not col_gene_like:
+        return "genes_as_rows"
+    if col_gene_like and not row_gene_like:
+        return "genes_as_columns"
+
+    return "unknown"
+
+
+
+from sc_transform import fix_orientation
+def csv_to_h5ad(
+    *,
+    csv_path: Path,
+    raw_dir: Path,
+    label: str, 
+    sample_meta: dict,
+):
+    for f in csv_path.glob("*.csv"):
+        sample_id = f.stem
+        ori = check_csv_orientation(f)
+
+        if ori == "genes_as_rows":
+            adata = sc.read_csv(f, first_column_names=True)
+            adata = fix_orientation(adata)
+        elif ori == "genes_as_columns":
+            adata = sc.read_csv(f, first_column_names=True)
+        else:
+            raise ValueError(f"Unknown orientation for {f}")
+        
+        adata.obs["sample_id"] = sample_id
+        
+        # I have no idea how to manage the 'saving' part
+
+def build_csv_anndata_old(
+    download_dir: Path,
+    raw_dir: Path,
+    label: str,
+) -> list[Path]:
+    """
+        Read .csv -> .h5ad
+        Convert multiple CSV files from download_dir into AnnData objects
+        and save them into raw_dir.
+
+        Returns
+        -------
+        list[Path]
+            Paths to written .h5ad files
+    """
+    if not download_dir.exists():
+        raise FileNotFoundError(f"{download_dir} does not exist")
+
+    raw_dir.mkdir(parents=True, exist_ok=True)
+
+    outputs: list[Path] = []
+
+    for path in download_dir.iterdir():
+        if not path.is_file():
+            continue
+        if path.suffix.lower() != ".csv":
+            continue
+        sample_id = path.stem
+
+        ad = sc.read_csv(
+            path,
+            var_names="gene_ids",
+        )
+        ad.var_names_make_unique()
+        out_file = raw_dir / f"{label}_{sample_id}.h5ad"
+        ad.write(out_file)
+
+        outputs.append(out_file)
+
+    return outputs
