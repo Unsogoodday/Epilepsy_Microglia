@@ -3,39 +3,47 @@ import scanpy as sc
 import pandas as pd
 import shutil, subprocess, gzip
 
-from files_utils import _download_tar_from_link, _download_from_link
+from src.files_utils import _download_tar_from_link, _download_from_link
 def _download_dataset(
     *,
-    filename: str,
     link: str,
     download_dir: Path,
     is_tar: bool,
 ) -> None:
     if is_tar:
-        _download_tar_from_link(filename, link, download_dir)
+        _download_tar_from_link(link, download_dir)
     else:
-        _download_from_link(filename, link, download_dir)
+        _download_from_link(link, download_dir)
 
-from files_utils import _gunzip_decompress, _tsv_to_csv
+from src.files_utils import _gunzip_decompress, _tsv_to_csv
 def _normalize_text_files(
     download_dir: Path,
     remove_original: bool,
 ) -> list[Path]:
     """
-        Normalize text formats into clean CSV file
+    Normalize text formats into clean CSV files.
     """
     if not download_dir.exists():
         raise FileNotFoundError(f"{download_dir} does not exist")
-    
+
     csv_outputs: list[Path] = []
 
-    for path in download_dir.iterdir():
-        if not path.is_file():
-            continue
+    if download_dir.is_file():
+        path = download_dir
+        out_dir = download_dir.parent
 
         path = _gunzip_decompress(path=path, remove_original=remove_original)
-        path = _tsv_to_csv(path=path, out_dir=download_dir, remove_original=remove_original)
-        csv_outputs.append[path]
+        path = _tsv_to_csv(path=path, out_dir=out_dir, remove_original=remove_original)
+        csv_outputs.append(path)
+
+    else:
+        for path in download_dir.iterdir():
+            if not path.is_file():
+                continue
+
+            path = _gunzip_decompress(path=path, remove_original=remove_original)
+            path = _tsv_to_csv(path=path, out_dir=download_dir, remove_original=remove_original)
+            csv_outputs.append(path)
 
     if not csv_outputs:
         raise RuntimeError(
@@ -43,7 +51,6 @@ def _normalize_text_files(
         )
 
     return csv_outputs
-
 
 def _build_mtx_anndata(
     download_dir: Path,
@@ -104,20 +111,18 @@ def _build_csv_anndata(
 
     outputs: list[Path] = []
 
-    for path in files():
+    for path in files:
         if not path.is_file():
             continue
         if path.suffix.lower() != ".csv":
             continue
         sample_id = path.stem
 
-        ad = sc.read_csv(
-            path,
-            var_names="gene_ids",
-        )
-        ad.var_names_make_unique()
+        ad = sc.read_csv(path)
+
         out_file = raw_dir / f"{label}_{sample_id}.h5ad"
         ad.write(out_file)
+        print(f"Writing {out_file.stem}")
 
         outputs.append(out_file)
 

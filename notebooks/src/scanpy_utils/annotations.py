@@ -1,7 +1,7 @@
 import pandas as pd
 import mygene
 import scanpy as sc
-import AnnData as ad
+import anndata as ad
 from scipy.stats import fisher_exact
 
 def _cleanup_annotation(

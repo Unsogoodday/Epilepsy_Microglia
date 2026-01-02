@@ -1,7 +1,9 @@
-from io import _download_dataset, _build_mtx_anndata, _build_csv_anndata
-from transform import _fix_orientation
-from annotations import _cleanup_annotation, _map_ensembl_to_symbol, _guardrail_unmapped_hvgs
+from src.scanpy_utils.io import _download_dataset, _normalize_text_files, _build_mtx_anndata, _build_csv_anndata
+from src.scanpy_utils.transform import _fix_orientation
+from src.scanpy_utils.annotations import _cleanup_annotation, _map_ensembl_to_symbol, _guardrail_unmapped_hvgs
+from src.scanpy_utils.concat import _concat_adata
 
+from pathlib import Path
 import scanpy as sc
 import numpy as np
 import matplotlib as plt
@@ -32,7 +34,6 @@ def download_mtx(
     download_dir: Path,
     raw_dir: Path,
     label: str,
-    sample_meta: dict,
     is_tar: bool,
 ) -> None:
     """
@@ -50,12 +51,25 @@ def download_mtx(
         raw_dir=raw_dir,
         label=label,
     )
-    for f in adata_paths:
+    h5ad_paths = list(h5ad_paths)  
+    for f in h5ad_paths:
+        print("READING:", f)
         if f.suffix != ".h5ad":
             raise ValueError(f"{f} is not a proper h5ad format")
-        adata=sc.read_h5ad(f)
-        adata=_fix_orientation(adata)
-        adata.write(f) 
+
+        name = f.name
+
+        if name.endswith(".raw.h5ad"):
+            base = name.removesuffix(".raw.h5ad")
+        else:
+            base = f.stem  
+
+        out_path = f.with_name(f"{base}.fixed.h5ad")
+
+        adata = sc.read_h5ad(f)
+        adata = _fix_orientation(adata)
+        adata.write(out_path)
+        print("WRITING:", out_path)
 
 def download_tsv_csv(
     *,
@@ -64,7 +78,6 @@ def download_tsv_csv(
     download_dir: Path,
     raw_dir: Path,
     label: str,
-    sample_meta: dict,
     is_tar: bool,
     remove_original: bool=True,
 ) -> None:
@@ -73,7 +86,6 @@ def download_tsv_csv(
     from csv/tsv files
     """
     _download_dataset(
-        filename=filename,
         link=link,
         download_dir=download_dir,
         is_tar=is_tar,
@@ -87,12 +99,25 @@ def download_tsv_csv(
         raw_dir=raw_dir,
         label=label,
     )
+    h5ad_paths = list(h5ad_paths)  
     for f in h5ad_paths:
+        print("READING:", f)
         if f.suffix != ".h5ad":
             raise ValueError(f"{f} is not a proper h5ad format")
-        adata=sc.read_h5ad(f)
-        adata=_fix_orientation(adata)
-        adata.write(f)
+
+        name = f.name
+
+        if name.endswith(".raw.h5ad"):
+            base = name.removesuffix(".raw.h5ad")
+        else:
+            base = f.stem  
+
+        out_path = f.with_name(f"{base}.fixed.h5ad")
+
+        adata = sc.read_h5ad(f)
+        adata = _fix_orientation(adata)
+        adata.write(out_path)
+        print("WRITING:", out_path)
     
 def load_h5ad(path):
     """
@@ -105,8 +130,7 @@ def load_h5ad(path):
     adata.obs["source_file"] = path.stem
     return adata
 
-from files_utils import _extract_tar
-from concat import _concat_adata
+from src.files_utils import _extract_tar
 def compile_from_tar(tar_path, label="sample", merge="first"):
     """
         directory compilation (tar)

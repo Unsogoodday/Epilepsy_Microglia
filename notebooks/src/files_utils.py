@@ -1,6 +1,15 @@
 from pathlib import Path
-from env_utils import get_temp_dir
+from src.env_utils import get_temp_dir
 import shutil, subprocess, gzip
+import pandas as pd
+
+def is_tar_file(path: Path) -> bool:
+    result = subprocess.run(
+        ["tar", "-tf", str(path)],
+        stdout=subprocess.DEVNULL,
+        stderr=subprocess.DEVNULL,
+    )
+    return result.returncode == 0
 
 def _extract_tar(src_tar: Path, dst_dir: Path):
     dst_dir.mkdir(parents=True, exist_ok=True)
@@ -15,37 +24,44 @@ def _extract_tar(src_tar: Path, dst_dir: Path):
             with tar.extractfile(member) as src, open(target, "wb") as dst:
                 dst.write(src.read())
 
-
-def _download_tar_from_link(
-    filename: str,
+def _download_tar_from_link( 
     link: str,
     download_dir: Path,
 ) -> None:
     download_dir.mkdir(parents=True, exist_ok=True)
-    tar_path = download_dir / filename
 
     subprocess.run(
-        ["curl", "-L", link, "-o", str(tar_path)],
-        check=True
+        ["curl", "-L", "-O", "-J", link], # or --remote-name --content-disposition
+        cwd=download_dir,
+        check=True,
     )
-    subprocess.run(
-        ["tar", "-xf", str(tar_path), "-C", str(download_dir)],
-        check=True
-    )
-    tar_path.unlink()
+
+    tar_files = [
+        p for p in download_dir.iterdir()
+        if p.is_file() and is_tar_file(p)
+    ]
+
+    if not tar_files:
+        raise RuntimeError("No tar archives found")
+
+    for tar_path in tar_files:
+        subprocess.run(
+            ["tar", "-xf", str(tar_path)],
+            cwd=download_dir,
+            check=True,
+        )
 
 
 def _download_from_link(
-    filename: str,
     link: str,
     download_dir: Path,
 ) -> None:
     download_dir.mkdir(parents=True, exist_ok=True)
-    download_path = download_dir / filename
 
     subprocess.run(
-        ["curl", "-L", link, "-o", str(download_path)],
-        check=True
+        ["curl", "-L", "-O", link],
+        cwd=download_dir,
+        check=True,
     )
 
 def _gunzip_decompress(
@@ -99,6 +115,7 @@ def _tsv_to_csv(
 
     df = pd.read_csv(path, sep="\t")
     df.to_csv(csv_path, index=False)
+    print(f"Turning {path.stem}.tsv to csv")
 
     if remove_original:
         path.unlink()

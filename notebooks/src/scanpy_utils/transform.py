@@ -1,15 +1,16 @@
 import scanpy as sc
 
-def _needs_transpose(adata):
-    if adata.X.shape == (adata.n_obs, adata.n_vars):
-        return False
-    elif adata.X.shape == (adata.n_vars, adata.n_obs):
-        return True
-    else:
-        raise ValueError("AnnData X shape incompatible with obs/var")
+def _looks_like_gene_ids(names):
+    """
+        Simple heuristic method to check if a column / row is gene_ids
+    """
+    return sum(name.isupper() and len(name) < 20 for name in names[:50]) > 20
 
 def _fix_orientation(adata):
-    if _needs_transpose(adata):
+    """
+        v2 (heuristic approach)
+        USE ONLY FOR INTERNALLY CONSISTENT ANNDATA OBJECTS
+    """
+    if _looks_like_gene_ids(adata.obs_names):
         adata = adata.T.copy()
-        adata.var_names_make_unique()
     return adata

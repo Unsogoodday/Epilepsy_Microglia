@@ -105,3 +105,17 @@ def build_csv_anndata_old(
         outputs.append(out_file)
 
     return outputs
+
+def _needs_transpose(adata):
+    """
+        Reason it is dumped :
+        This code only tests internal consistency, not real matrix orientation
+        gene-by-cell and cell-by-gene matrix share the same mathematical properties
+        Best practice should include heuristic approach
+    """
+    if adata.X.shape == (adata.n_obs, adata.n_vars):
+        return False
+    elif adata.X.shape == (adata.n_vars, adata.n_obs):
+        return True
+    else:
+        raise ValueError("AnnData X shape incompatible with obs/var")
