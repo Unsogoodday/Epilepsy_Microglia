@@ -12,5 +12,5 @@ def _fix_orientation(adata):
         USE ONLY FOR INTERNALLY CONSISTENT ANNDATA OBJECTS
     """
     if _looks_like_gene_ids(adata.obs_names):
-        adata = adata.T.copy()
+        return adata.T.copy()  # 새 객체 반환
     return adata
