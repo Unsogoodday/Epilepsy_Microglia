@@ -1,4 +1,4 @@
-from src.scanpy_utils.io import _download_dataset, _normalize_text_files, _build_mtx_anndata, _build_csv_anndata
+from src.scanpy_utils.io import _download_dataset, _normalize_text_files, _build_mtx_with_auto_wrap, _build_csv_anndata
 from src.scanpy_utils.transform import _fix_orientation
 from src.scanpy_utils.annotations import _cleanup_annotation, _map_ensembl_to_symbol, _guardrail_unmapped_hvgs
 from src.scanpy_utils.concat import _concat_adata
@@ -67,8 +67,11 @@ def download_mtx(
 
         adata = sc.read_h5ad(f)
         adata = _fix_orientation(adata)
-        print("Transposing", out_path)
+        print("BEFORE WRITE:", adata.shape)
+
         adata.write(out_path)
+        tmp = sc.read_h5ad(out_path)
+        print("AFTER READ:", tmp.shape)
         print("WRITING:", out_path)
 
 def download_tsv_csv(
@@ -116,8 +119,11 @@ def download_tsv_csv(
 
         adata = sc.read_h5ad(f)
         adata = _fix_orientation(adata)
-        print("Transposing", out_path)
+        print("BEFORE WRITE:", adata.shape)
+
         adata.write(out_path)
+        tmp = sc.read_h5ad(out_path)
+        print("AFTER READ:", tmp.shape)
         print("WRITING:", out_path)
     
 def load_h5ad(path):

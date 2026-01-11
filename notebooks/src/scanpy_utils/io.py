@@ -99,7 +99,7 @@ def _wrap_flat_10x_to_subdirs(
         for p in paths:
             target_name = p.name.split(sep, 1)[1]
             shutil.move(p, sample_dir / target_name)
-        print(f"Wrapped {paths.stem}")
+        print(f"Wrapped {p.stem}")
 
     return download_dir
 

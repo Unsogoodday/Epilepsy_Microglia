@@ -7,10 +7,17 @@ def _looks_like_gene_ids(names):
     return sum(name.isupper() and len(name) < 20 for name in names[:50]) > 20
 
 def _fix_orientation(adata):
-    """
-        v2 (heuristic approach)
-        USE ONLY FOR INTERNALLY CONSISTENT ANNDATA OBJECTS
-    """
-    if _looks_like_gene_ids(adata.obs_names):
-        return adata.T.copy()  # 새 객체 반환
+    if adata.uns.get("orientation_fixed"):
+        return adata
+
+    obs_gene = _looks_like_gene_ids(adata.obs_names)
+    var_gene = _looks_like_gene_ids(adata.var_names)
+
+    if obs_gene and not var_gene:
+        adata = adata.T.copy()
+        adata.uns["orientation_fixed"] = True
+        return adata
+
+    adata.uns["orientation_fixed"] = True
     return adata
+
