@@ -13,8 +13,8 @@ import matplotlib as plt
     Import directly to notebook
 
     io
-    - sc_download_mtx : download mtx type data, fix orientation, write in raw_dir
-    - sc_download_tsv : download tsv type data, fix orientation, write in raw_dir
+    - download_mtx : download mtx type data, fix orientation, write in raw_dir
+    - download_tsv_csv : download tsv type data, fix orientation, write in raw_dir
 
     qc
     - sc_plot_qc_mt_rb_hb : compute mt, rb, hb gene pct and plot
@@ -41,12 +41,11 @@ def download_mtx(
     from 10x-style matrix directories.
     """
     _download_dataset(
-        filename=filename,
         link=link,
         download_dir=download_dir,
         is_tar=is_tar,
     )
-    adata_paths = _build_mtx_anndata(
+    h5ad_paths = _build_mtx_with_auto_wrap(
         download_dir=download_dir,
         raw_dir=raw_dir,
         label=label,
@@ -68,6 +67,7 @@ def download_mtx(
 
         adata = sc.read_h5ad(f)
         adata = _fix_orientation(adata)
+        print("Transposing", out_path)
         adata.write(out_path)
         print("WRITING:", out_path)
 
@@ -116,6 +116,7 @@ def download_tsv_csv(
 
         adata = sc.read_h5ad(f)
         adata = _fix_orientation(adata)
+        print("Transposing", out_path)
         adata.write(out_path)
         print("WRITING:", out_path)
     
@@ -169,3 +170,29 @@ def compile_from_dir(dir_path, label="sample", merge="first"):
     adata = _concat_adata(adatas, label=label, merge=merge)
     return adata
 
+from src.scanpy_utils.annotations import _cleanup_annotation, _map_ensembl_to_symbol, _guardrail_unmapped_hvgs
+def sc_annotate_mygene(
+    adata,
+    old_id,
+):
+    """
+    - clean Ensembl IDs
+    - map to gene symbols
+    - mark mapping status
+    - run guardrail
+    """
+    adata = _cleanup_annotation(adata, old_id)
+    adata = _map_ensembl_to_symbol(adata)
+
+    adata.var["mapping_status"] = np.where(
+        adata.var["gene_symbol"].isna(),
+        "unmapped",
+        "mapped",
+    )
+
+    decision, report = _guardrail_unmapped_hvgs(adata)
+
+    if decision == "FAIL":
+        raise ValueError(f"Gene mapping failed QC: {report}")
+
+    return adata, report

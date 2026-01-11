@@ -1,4 +1,7 @@
 #미완
+import scanpy as sc
+import numpy as np
+import matplotlib.pyplot as plt
 
 def sc_plot_qc_mt_rb_hb(adata, dataset, date):
     sc.pl.violin(
@@ -103,28 +106,7 @@ def sc_plot_qc_distributions(adata, qc_mask=None, bins=100):
 
         plt.show()
 
-def sc_annotate_mygene(
-    adata,
-    old_id,
-):
-    """
-    - clean Ensembl IDs
-    - map to gene symbols
-    - mark mapping status
-    - run guardrail
-    """
-    adata = cleanup_annotation(adata, old_id)
-    adata = map_ensembl_to_symbol(adata)
-
-    adata.var["mapping_status"] = np.where(
-        adata.var["gene_symbol"].isna(),
-        "unmapped",
-        "mapped",
-    )
-
-    decision, report = guardrail_unmapped_hvgs(adata)
-
-    if decision == "FAIL":
-        raise ValueError(f"Gene mapping failed QC: {report}")
-
-    return adata, report
+        n_total = adata.n_obs
+        n_pass = int(qc_mask.sum())
+        n_fail = n_total - n_pass
+        print(f"QC result: {n_pass} / {n_total} cells kept ({n_fail} removed)")
