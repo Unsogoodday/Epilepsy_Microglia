@@ -209,6 +209,7 @@ def _normalize_text_files(
 
         path = _gunzip_decompress(path=path, remove_original=remove_original)
         path = _tsv_to_csv(path=path, out_dir=out_dir, remove_original=remove_original)
+        print()
         csv_outputs.append(path)
 
     else:

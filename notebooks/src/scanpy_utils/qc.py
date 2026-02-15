@@ -41,9 +41,9 @@ def sc_add_mt_ribo_hb_qc(adata, copy=True):
     if "counts" not in adata.layers:
         adata.layers["counts"] = adata.X.copy()
 
-    adata.var["mt"] = adata.var_names.str.startswith("MT-")
-    adata.var["ribo"] = adata.var_names.str.startswith(("RPS", "RPL"))
-    adata.var["hb"] = adata.var_names.str.contains(r"^HB(?!P)")
+    adata.var["mt"] = adata.var["gene_symbols"].str.startswith("MT-")
+    adata.var["ribo"] = adata.var["gene_symbols"].str.startswith(("RPS", "RPL"))
+    adata.var["hb"] = adata.var["gene_symbols"].str.contains(r"^HB(?!P)")
 
     sc.pp.calculate_qc_metrics(
         adata,

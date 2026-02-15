@@ -20,21 +20,23 @@ def detect_env():
     
     return "local"
 
-def get_paths(PROJECT_NAME):
+def get_paths(DATASET_NAME: str):
     env = detect_env()
 
     if env == "colab":
-        base = Path("/content/drive/MyDrive/datas")
+        data_root = Path("/content/drive/MyDrive/data/active")
     elif env == "code-server":
-        base = Path("/home/neuro_demo_research/data_from_drive")
+        data_root = Path("/home/neuro_demo_research/data/active")
     else:
-        base = Path("~/neuro_demo_research").expanduser()
+        data_root = Path.home() / "data" / "active"
+
+    base = data_root / DATASET_NAME
 
     return {
-        "base" : base / PROJECT_NAME,
-        "raw" : base / PROJECT_NAME / "raw",
-        "processed" : base / PROJECT_NAME / "processed",
-        "plots" : base / PROJECT_NAME / "plots",
+        "base": base,
+        "raw": base / "raw",
+        "processed": base / "processed",
+        "plots": base / "plots",
     }
 
 def get_temp_dir():

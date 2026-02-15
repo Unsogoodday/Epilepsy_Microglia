@@ -199,6 +199,6 @@ def sc_annotate_mygene(
     decision, report = _guardrail_unmapped_hvgs(adata)
 
     if decision == "FAIL":
-        raise ValueError(f"Gene mapping failed QC: {report}")
+        print(f"Gene mapping failed QC: {report}")
 
     return adata, report

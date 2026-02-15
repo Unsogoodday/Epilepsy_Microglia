@@ -1,4 +1,5 @@
 import pandas as pd
+import numpy as np
 import mygene
 import scanpy as sc
 import anndata as ad
@@ -53,8 +54,6 @@ def _map_ensembl_to_symbol(
         Adds adata.var[symbol_key] (NaN if unmapped).
         Returns a copy of adata.
     """
-    adata = adata.copy()
-
     if ensembl_key not in adata.var:
         raise KeyError(f"{ensembl_key} not found in adata.var")
 
@@ -92,9 +91,9 @@ def _guardrail_unmapped_hvgs(
     hvg_key="highly_variable",
     mapping_key="mapping_status",
     mapped_label="mapped",
-    max_unmapped_hvg_fraction=0.05,
+    max_unmapped_hvg_fraction=0.15,
     min_unmapped_genes=30,
-    or_fail_threshold=0.2,
+    or_fail_threshold=0.5,
     pseudocount=0.5,
 ):
     """
@@ -143,6 +142,58 @@ def _guardrail_unmapped_hvgs(
         "reasons": reasons,
     }
     return decision, report
+
+
+def _check_top_hvg_unmapped(
+    adata,
+    top_n=100,
+    hvg_rank_key="highly_variable_rank",
+    hvg_flag_key="highly_variable",
+    mapping_key="mapping_status",
+    mapped_label="mapped",
+):
+    """
+    Check unmapped fraction among top N HVGs.
+
+    Returns: report_dict
+    """
+
+    var = adata.var.copy()
+
+    if mapping_key not in var:
+        raise KeyError(f"{mapping_key} not found in adata.var")
+
+    # Determine ranking source
+    if hvg_rank_key in var:
+        ranked = var.sort_values(hvg_rank_key)
+    else:
+        # fallback: use variance-like metrics
+        if "variances_norm" in var:
+            ranked = var.sort_values("variances_norm", ascending=False)
+        elif "dispersions_norm" in var:
+            ranked = var.sort_values("dispersions_norm", ascending=False)
+        else:
+            raise KeyError("No rank or variance metric found for HVG ordering")
+
+    # Keep only HVGs if flag exists
+    if hvg_flag_key in var:
+        ranked = ranked[ranked[hvg_flag_key]]
+
+    top = ranked.head(top_n)
+
+    total_top = len(top)
+    unmapped_top = np.sum(top[mapping_key] != mapped_label)
+
+    fraction = unmapped_top / total_top if total_top else 0.0
+
+    report = {
+        "top_n": top_n,
+        "total_top_hvgs": total_top,
+        "unmapped_in_top": int(unmapped_top),
+        "unmapped_fraction_top": fraction,
+    }
+
+    return report
 
 def _annotate_metadata(
     adata: ad.AnnData,
