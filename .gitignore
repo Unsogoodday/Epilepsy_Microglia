@@ -25,3 +25,6 @@ __pycache__/
 
 # Track notebooks explicitly
 !notebooks/*.ipynb
+notebooks/biml_tutorials/adata_raw
+notebooks/biml_tutorials/adata_raw
+notebooks/biml_tutorials/adata_raw

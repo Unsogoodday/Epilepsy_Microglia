@@ -1,0 +1,79 @@
+# Galvao sources inspected; remaining studies await curated source processing.
+# Only Galvao is authorized for downloading and ingestion in this run.
+schema_version: 1
+datasets:
+  galvao:
+    status: ingested_validated
+    manifest_study_id: Galvao2024
+    accession: GSE268807
+    sources:
+      - https://ftp.ncbi.nlm.nih.gov/geo/series/GSE268nnn/GSE268807/suppl/
+      - https://ftp.ncbi.nlm.nih.gov/geo/series/GSE268nnn/GSE268807/soft/GSE268807_family.soft.gz
+      - https://datasets.cellxgene.cziscience.com/799e0777-8fe4-4d14-9183-01a7314923ec.h5ad
+    source_inventory: data/metadata/galvao/download_inventory.json
+    assay: snRNA-seq
+    platform: 10x Genomics Multiome ATAC + Gene Expression
+    raw_counts_available: true
+    raw_dir: data/raw/galvao
+    output: data/processed/galvao/galvao.h5ad
+    ingest_script: scripts/ingest/galvao.py
+  kumar:
+    status: awaiting_curated_sources
+    accession: null
+    sources: []
+    assay: null
+    platform: null
+    raw_counts_available: null
+    raw_dir: data/raw/kumar
+    output: data/processed/kumar/kumar.h5ad
+    ingest_script: scripts/ingest/kumar.py
+  ayhan:
+    status: awaiting_curated_sources
+    accession: null
+    sources: []
+    assay: null
+    platform: null
+    raw_counts_available: null
+    raw_dir: data/raw/ayhan
+    output: data/processed/ayhan/ayhan.h5ad
+    ingest_script: scripts/ingest/ayhan.py
+  pai:
+    status: awaiting_curated_sources
+    accession: null
+    sources: []
+    assay: null
+    platform: null
+    raw_counts_available: null
+    raw_dir: data/raw/pai
+    output: data/processed/pai/pai.h5ad
+    ingest_script: scripts/ingest/pai.py
+  thrupp:
+    status: awaiting_curated_sources
+    accession: null
+    sources: []
+    assay: null
+    platform: null
+    raw_counts_available: null
+    raw_dir: data/raw/thrupp
+    output: data/processed/thrupp/thrupp.h5ad
+    ingest_script: scripts/ingest/thrupp.py
+  pappalardo:
+    status: awaiting_curated_sources
+    accession: null
+    sources: []
+    assay: null
+    platform: null
+    raw_counts_available: null
+    raw_dir: data/raw/pappalardo
+    output: data/processed/pappalardo/pappalardo.h5ad
+    ingest_script: scripts/ingest/pappalardo.py
+  liu:
+    status: awaiting_curated_sources
+    accession: null
+    sources: []
+    assay: null
+    platform: null
+    raw_counts_available: null
+    raw_dir: data/raw/liu
+    output: data/processed/liu/liu.h5ad
+    ingest_script: scripts/ingest/liu.py

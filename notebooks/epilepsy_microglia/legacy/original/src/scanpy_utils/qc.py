@@ -3,29 +3,6 @@ import scanpy as sc
 import numpy as np
 import matplotlib.pyplot as plt
 
-def sc_plot_qc_mt_rb_hb(adata, dataset, date):
-    sc.pl.violin(
-        adata,
-        [
-            "n_genes_by_counts",
-            "total_counts",
-            "pct_counts_mt",
-            "pct_counts_ribo",
-            "pct_counts_hb",
-        ],
-        jitter=0.4,
-        multi_panel=True,
-        save=f"{dataset}_qc_{date}.png",
-    )
-
-    sc.pl.scatter(
-        adata,
-        "total_counts",
-        "n_genes_by_counts",
-        color="pct_counts_mt",
-        save=f"{dataset}_qc_{date}.png",
-    )
-
 def sc_add_mt_ribo_hb_qc(adata, copy=True):
     """
     Annotate mitochondrial, ribosomal, and hemoglobin genes
@@ -53,6 +30,36 @@ def sc_add_mt_ribo_hb_qc(adata, copy=True):
     )
 
     return adata
+
+
+def sc_plot_qc_mt_rb_hb(adata, dataset, date):
+    sc.pl.violin(
+        adata,
+        [
+            "n_genes_by_counts",
+            "total_counts",
+            "pct_counts_mt",
+            "pct_counts_ribo",
+            "pct_counts_hb",
+        ],
+        jitter=0.4,
+        multi_panel=True,
+    )
+
+    # log로 axis 바꿈
+    sc.pl.scatter(
+        adata,
+        "log1p_total_counts",
+        "log1p_n_genes_by_counts",
+        color="pct_counts_mt",
+    )
+
+    sc.pl.scatter(
+        adata,
+        "log1p_total_counts",
+        "log1p_n_genes_by_counts",
+        color="pct_counts_ribo",
+    )
 
 def sc_build_qc_mask(
     adata,
@@ -84,7 +91,7 @@ def sc_apply_qc_mask(adata, qc_mask, copy=True):
     return adata[qc_mask, :]
 
 def sc_plot_qc_distributions(adata, qc_mask=None, bins=100):
-    fig, axes = plt.subplots(1, 2, figsize=(10, 4))
+    fig, axes = plt.subplots(1, 3, figsize=(10, 4))
 
     axes[0].hist(np.log1p(adata.obs["n_genes_by_counts"]), bins=bins)
     axes[0].set_title("log(n_genes_by_counts) - before")
@@ -92,17 +99,23 @@ def sc_plot_qc_distributions(adata, qc_mask=None, bins=100):
     axes[1].hist(np.log1p(adata.obs["total_counts"]), bins=bins)
     axes[1].set_title("log(total_counts) - before")
 
+    axes[2].hist(adata.obs["pct_counts_mt"], bins=bins)
+    axes[2].set_title("pct_counts_mt - before")
+
     plt.show()
 
     if qc_mask is not None:
         adata_qc = adata[qc_mask]
 
-        fig, axes = plt.subplots(1, 2, figsize=(10, 4))
+        fig, axes = plt.subplots(1, 3, figsize=(10, 4))
         axes[0].hist(np.log1p(adata_qc.obs["n_genes_by_counts"]), bins=bins)
         axes[0].set_title("log(n_genes_by_counts) - after")
 
         axes[1].hist(np.log1p(adata_qc.obs["total_counts"]), bins=bins)
         axes[1].set_title("log(total_counts) - after")
+
+        axes[2].hist(adata.obs["pct_counts_mt"], bins=bins)
+        axes[2].set_title("pct_counts_mt - after")
 
         plt.show()
 

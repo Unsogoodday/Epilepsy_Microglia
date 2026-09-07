@@ -1,0 +1,3 @@
+# Derived inspection export and incomplete downloads stay local.
+cellxgene_obs_inspection.csv
+download_staging/

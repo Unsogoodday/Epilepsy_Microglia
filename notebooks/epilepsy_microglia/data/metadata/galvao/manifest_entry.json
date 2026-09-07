@@ -1,0 +1,16 @@
+{
+  "study_id": "Galvao2024",
+  "priority": "core FCD II",
+  "GEO accessions": "GSE268807",
+  "GEO landing page(s)": "https://www.ncbi.nlm.nih.gov/geo/query/acc.cgi?acc=GSE268807",
+  "GEO supplementary directory": "https://ftp.ncbi.nlm.nih.gov/geo/series/GSE268nnn/GSE268807/suppl/",
+  "assay / usable expression input": "10x Multiome: paired snRNA + snATAC; processed GEX Matrix Market available",
+  "download exactly": "All supplementary files; GEX matrix/barcodes/features + sample/cell metadata. Do not download SRA ATAC unless later requested.",
+  "metadata available": "Yes: sample and cell-level; CELLxGENE object/annotations also available",
+  "donors / comparison group": "8 FCD donors; 3 FCD IIa, 6 FCD IIb; 11 specimens incl. 2 normal-appearing internal specimens",
+  "expected output for Codex": "Preserve original files; construct one paired RNA AnnData with donor/specimen metadata, do not integrate",
+  "author annotations": "Yes",
+  "key caveat": "GEO has no processed ATAC matrix; raw ATAC reads only. Internal normal tissue is not HC.",
+  "download status": "pending",
+  "Codex handoff note": "Highest-priority FCD II cohort. Verify barcode-to-specimen mapping before writing h5ad."
+}

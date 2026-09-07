@@ -1,0 +1,175 @@
+Reading GSE268807_G120_D_FL: 13,006 nuclei
+  36,727,323 RNA entries; all shared counts match for 8,478 annotated nuclei
+Reading GSE268807_G120_D_TL: 3,248 nuclei
+  12,113,612 RNA entries; all shared counts match for 1,607 annotated nuclei
+Reading GSE268807_G120_F1_N: 1,114 nuclei
+  2,929,405 RNA entries; all shared counts match for 739 annotated nuclei
+Reading GSE268807_G129_D: 17,176 nuclei
+  29,312,611 RNA entries; all shared counts match for 9,141 annotated nuclei
+Reading GSE268807_G133_D_FL: 12,732 nuclei
+  36,792,081 RNA entries; all shared counts match for 8,902 annotated nuclei
+Reading GSE268807_G133_N_FL: 20,000 nuclei
+  52,075,273 RNA entries; all shared counts match for 13,335 annotated nuclei
+Reading GSE268807_G150_D: 3,068 nuclei
+  2,339,360 RNA entries; all shared counts match for 1,650 annotated nuclei
+Reading GSE268807_G159_D: 8,217 nuclei
+  9,307,429 RNA entries; all shared counts match for 4,266 annotated nuclei
+Reading GSE268807_G171_D: 3,318 nuclei
+  2,122,777 RNA entries; all shared counts match for 1,151 annotated nuclei
+Reading GSE268807_G187_D: 8,950 nuclei
+  3,827,135 RNA entries; all shared counts match for 2,880 annotated nuclei
+Reading GSE268807_G210_D: 15,461 nuclei
+  18,362,644 RNA entries; all shared counts match for 9,376 annotated nuclei
+Writing (106290, 36601)
+{
+  "path": "/home/neuro_demo_research/repo/epilepsy_microglia_repo/notebooks/epilepsy_microglia/data/processed/galvao/galvao.h5ad",
+  "size_bytes": 3340450033,
+  "shape": [
+    106290,
+    36601
+  ],
+  "X_type": "csr_matrix",
+  "X_dtype": "int32",
+  "X_nnz": 205909650,
+  "layers": [
+    "counts"
+  ],
+  "obs_columns": [
+    "source_cell_id",
+    "study",
+    "donor_id",
+    "sample_id",
+    "diagnosis",
+    "pathology",
+    "fcd_subtype",
+    "control_status",
+    "mutation_status",
+    "brain_region",
+    "assay",
+    "platform",
+    "source_accession",
+    "source_sample_id",
+    "source_file",
+    "paired_atac_accession",
+    "source_file_sample_id",
+    "fcd_type",
+    "geo_accession",
+    "geo_source_name",
+    "geo_tissue",
+    "geo_donor",
+    "geo_disease",
+    "geo_library_type",
+    "geo_Sex",
+    "geo_age_at_surgery",
+    "geo_age_at_onset",
+    "geo_duration",
+    "geo_lobe",
+    "geo_lateralization",
+    "geo_histological_assessment",
+    "geo_surgery_reason",
+    "geo_seq_batch",
+    "geo_platform_id",
+    "cellxgene_mapped_reference_annotation",
+    "cellxgene_donor_id",
+    "cellxgene_self_reported_ethnicity_ontology_term_id",
+    "cellxgene_donor_living_at_sample_collection",
+    "cellxgene_sample_uuid",
+    "cellxgene_sample_preservation_method",
+    "cellxgene_tissue_ontology_term_id",
+    "cellxgene_development_stage_ontology_term_id",
+    "cellxgene_sample_derivation_process",
+    "cellxgene_tissue_type",
+    "cellxgene_suspension_derivation_process",
+    "cellxgene_suspension_uuid",
+    "cellxgene_suspension_type",
+    "cellxgene_library_uuid",
+    "cellxgene_assay_ontology_term_id",
+    "cellxgene_is_primary_data",
+    "cellxgene_cell_type_ontology_term_id",
+    "cellxgene_author_cell_type",
+    "cellxgene_disease_ontology_term_id",
+    "cellxgene_sex_ontology_term_id",
+    "cellxgene_nCount_RNA",
+    "cellxgene_nFeature_RNA",
+    "cellxgene_percent.mito",
+    "cellxgene_nucleosome_signal",
+    "cellxgene_TSS.enrichment",
+    "cellxgene_onset",
+    "cellxgene_duration",
+    "cellxgene_lateralization",
+    "cellxgene_histological_assessment",
+    "cellxgene_cell_type",
+    "cellxgene_assay",
+    "cellxgene_disease",
+    "cellxgene_sex",
+    "cellxgene_tissue",
+    "cellxgene_self_reported_ethnicity",
+    "cellxgene_development_stage",
+    "cellxgene_observation_joinid",
+    "cellxgene_source_obs_id",
+    "author_annotation_available"
+  ],
+  "var_columns": [
+    "source_gene_id",
+    "gene_symbol",
+    "feature_type",
+    "chromosome",
+    "source_start",
+    "source_end",
+    "cellxgene_feature_name",
+    "cellxgene_feature_reference",
+    "cellxgene_feature_biotype",
+    "cellxgene_feature_length",
+    "cellxgene_feature_type"
+  ],
+  "sample_counts": {
+    "G133_N.2": 20000,
+    "G129_D": 17176,
+    "G210_D": 15461,
+    "G120_D.3": 13006,
+    "G133_D.2": 12732,
+    "G187_D": 8950,
+    "G159_D": 8217,
+    "G171_D": 3318,
+    "G120_D.2": 3248,
+    "G150_D": 3068,
+    "G120_N.1": 1114
+  },
+  "donor_counts": {
+    "G133": 32732,
+    "G120": 17368,
+    "G129": 17176,
+    "G210": 15461,
+    "G187": 8950,
+    "G159": 8217,
+    "G171": 3318,
+    "G150": 3068
+  },
+  "annotated_nuclei": 61525,
+  "values": {
+    "diagnosis": {
+      "focal cortical dysplasia": 106290
+    },
+    "fcd_type": {
+      "IIb": 69840,
+      "nan": 21114,
+      "IIa": 15336
+    },
+    "pathology": {
+      "FCD_typeIIb": 69840,
+      "Normal": 21114,
+      "FCD_typeIIa": 15336
+    },
+    "brain_region": {
+      "Frontal": 61455,
+      "Parietal": 17176,
+      "Temporo-Occipital": 15461,
+      "Temporal": 12198
+    },
+    "control_status": {
+      "FCD_lesion": 85176,
+      "internal_histologically_normal": 21114
+    }
+  },
+  "validation": "passed; reopened, source counts fingerprinted, raw SHA256 unchanged"
+}

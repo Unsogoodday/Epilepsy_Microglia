@@ -1,0 +1,222 @@
+[
+  {
+    "prefix": "GSE268807_G120_D_FL",
+    "matrix_header": "%%MatrixMarket matrix coordinate integer general",
+    "matrix_dimensions": [
+      143323,
+      13006,
+      80978723
+    ],
+    "feature_types": {
+      "Gene Expression": 36601,
+      "Peaks": 106722
+    },
+    "feature_columns": 6,
+    "barcodes_unique": true,
+    "barcode_examples": [
+      "AAACAGCCAATCTCTC-1",
+      "AAACAGCCACTGACCG-1",
+      "AAACAGCCAGGCCTTG-1"
+    ]
+  },
+  {
+    "prefix": "GSE268807_G120_D_TL",
+    "matrix_header": "%%MatrixMarket matrix coordinate integer general",
+    "matrix_dimensions": [
+      117827,
+      3248,
+      29930815
+    ],
+    "feature_types": {
+      "Gene Expression": 36601,
+      "Peaks": 81226
+    },
+    "feature_columns": 6,
+    "barcodes_unique": true,
+    "barcode_examples": [
+      "AAACAGCCAACTGGCT-1",
+      "AAACAGCCACCAGCAT-1",
+      "AAACAGCCATAAACCT-1"
+    ]
+  },
+  {
+    "prefix": "GSE268807_G120_F1_N",
+    "matrix_header": "%%MatrixMarket matrix coordinate integer general",
+    "matrix_dimensions": [
+      94003,
+      1114,
+      9961353
+    ],
+    "feature_types": {
+      "Gene Expression": 36601,
+      "Peaks": 57402
+    },
+    "feature_columns": 6,
+    "barcodes_unique": true,
+    "barcode_examples": [
+      "AAACCAACATCTAGCA-1",
+      "AAACCGCGTGCATTAG-1",
+      "AAAGGAGCAATCCTAG-1"
+    ]
+  },
+  {
+    "prefix": "GSE268807_G129_D",
+    "matrix_header": "%%MatrixMarket matrix coordinate integer general",
+    "matrix_dimensions": [
+      131903,
+      17176,
+      60994557
+    ],
+    "feature_types": {
+      "Gene Expression": 36601,
+      "Peaks": 95302
+    },
+    "feature_columns": 6,
+    "barcodes_unique": true,
+    "barcode_examples": [
+      "AAACAGCCAAAGCTCC-1",
+      "AAACAGCCAAGGTCGA-1",
+      "AAACAGCCACAGGAAT-1"
+    ]
+  },
+  {
+    "prefix": "GSE268807_G133_D_FL",
+    "matrix_header": "%%MatrixMarket matrix coordinate integer general",
+    "matrix_dimensions": [
+      126607,
+      12732,
+      73771494
+    ],
+    "feature_types": {
+      "Gene Expression": 36601,
+      "Peaks": 90006
+    },
+    "feature_columns": 6,
+    "barcodes_unique": true,
+    "barcode_examples": [
+      "AAACAGCCAAGCTACC-1",
+      "AAACAGCCACCAGCAT-1",
+      "AAACAGCCACCTGCCT-1"
+    ]
+  },
+  {
+    "prefix": "GSE268807_G133_N_FL",
+    "matrix_header": "%%MatrixMarket matrix coordinate integer general",
+    "matrix_dimensions": [
+      168944,
+      20000,
+      113622231
+    ],
+    "feature_types": {
+      "Gene Expression": 36601,
+      "Peaks": 132343
+    },
+    "feature_columns": 6,
+    "barcodes_unique": true,
+    "barcode_examples": [
+      "AAACAGCCAACTGGGA-1",
+      "AAACAGCCAATTAACC-1",
+      "AAACAGCCACACCAAC-1"
+    ]
+  },
+  {
+    "prefix": "GSE268807_G150_D",
+    "matrix_header": "%%MatrixMarket matrix coordinate integer general",
+    "matrix_dimensions": [
+      114970,
+      3068,
+      23594006
+    ],
+    "feature_types": {
+      "Gene Expression": 36601,
+      "Peaks": 78369
+    },
+    "feature_columns": 6,
+    "barcodes_unique": true,
+    "barcode_examples": [
+      "AAACATGCAGACAAAC-1",
+      "AAACATGCATAAAGCA-1",
+      "AAACATGCATGAATCT-1"
+    ]
+  },
+  {
+    "prefix": "GSE268807_G159_D",
+    "matrix_header": "%%MatrixMarket matrix coordinate integer general",
+    "matrix_dimensions": [
+      93725,
+      8217,
+      26189027
+    ],
+    "feature_types": {
+      "Gene Expression": 36601,
+      "Peaks": 57124
+    },
+    "feature_columns": 6,
+    "barcodes_unique": true,
+    "barcode_examples": [
+      "AAACAGCCAAGCGATG-1",
+      "AAACAGCCACATTAAC-1",
+      "AAACAGCCATAATGAG-1"
+    ]
+  },
+  {
+    "prefix": "GSE268807_G171_D",
+    "matrix_header": "%%MatrixMarket matrix coordinate integer general",
+    "matrix_dimensions": [
+      117706,
+      3318,
+      18256891
+    ],
+    "feature_types": {
+      "Gene Expression": 36601,
+      "Peaks": 81105
+    },
+    "feature_columns": 6,
+    "barcodes_unique": true,
+    "barcode_examples": [
+      "AAACAGCCAAGGAATC-1",
+      "AAACCAACAACAGCCT-1",
+      "AAACCAACATAATGTC-1"
+    ]
+  },
+  {
+    "prefix": "GSE268807_G187_D",
+    "matrix_header": "%%MatrixMarket matrix coordinate integer general",
+    "matrix_dimensions": [
+      121560,
+      8950,
+      38682533
+    ],
+    "feature_types": {
+      "Gene Expression": 36601,
+      "Peaks": 84959
+    },
+    "feature_columns": 6,
+    "barcodes_unique": true,
+    "barcode_examples": [
+      "AAACAGCCAAACAACA-1",
+      "AAACAGCCACCTCGCT-1",
+      "AAACAGCCAGGCATGA-1"
+    ]
+  },
+  {
+    "prefix": "GSE268807_G210_D",
+    "matrix_header": "%%MatrixMarket matrix coordinate integer general",
+    "matrix_dimensions": [
+      122777,
+      15461,
+      48174024
+    ],
+    "feature_types": {
+      "Gene Expression": 36601,
+      "Peaks": 86176
+    },
+    "feature_columns": 6,
+    "barcodes_unique": true,
+    "barcode_examples": [
+      "AAACAGCCAAACGGGC-1",
+      "AAACAGCCAACCCTAA-1",
+      "AAACAGCCAAGCGATG-1"
+    ]
+  }
+]

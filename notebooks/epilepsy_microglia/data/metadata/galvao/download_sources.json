@@ -1,0 +1,148 @@
+[
+  {
+    "filename": "GSE268807_G120_D_FL_barcodes.tsv.gz",
+    "url": "https://ftp.ncbi.nlm.nih.gov/geo/series/GSE268nnn/GSE268807/suppl/GSE268807_G120_D_FL_barcodes.tsv.gz"
+  },
+  {
+    "filename": "GSE268807_G120_D_FL_features.tsv.gz",
+    "url": "https://ftp.ncbi.nlm.nih.gov/geo/series/GSE268nnn/GSE268807/suppl/GSE268807_G120_D_FL_features.tsv.gz"
+  },
+  {
+    "filename": "GSE268807_G120_D_FL_matrix.mtx.gz",
+    "url": "https://ftp.ncbi.nlm.nih.gov/geo/series/GSE268nnn/GSE268807/suppl/GSE268807_G120_D_FL_matrix.mtx.gz"
+  },
+  {
+    "filename": "GSE268807_G120_D_TL_barcodes.tsv.gz",
+    "url": "https://ftp.ncbi.nlm.nih.gov/geo/series/GSE268nnn/GSE268807/suppl/GSE268807_G120_D_TL_barcodes.tsv.gz"
+  },
+  {
+    "filename": "GSE268807_G120_D_TL_features.tsv.gz",
+    "url": "https://ftp.ncbi.nlm.nih.gov/geo/series/GSE268nnn/GSE268807/suppl/GSE268807_G120_D_TL_features.tsv.gz"
+  },
+  {
+    "filename": "GSE268807_G120_D_TL_matrix.mtx.gz",
+    "url": "https://ftp.ncbi.nlm.nih.gov/geo/series/GSE268nnn/GSE268807/suppl/GSE268807_G120_D_TL_matrix.mtx.gz"
+  },
+  {
+    "filename": "GSE268807_G120_F1_N_barcodes.tsv.gz",
+    "url": "https://ftp.ncbi.nlm.nih.gov/geo/series/GSE268nnn/GSE268807/suppl/GSE268807_G120_F1_N_barcodes.tsv.gz"
+  },
+  {
+    "filename": "GSE268807_G120_F1_N_features.tsv.gz",
+    "url": "https://ftp.ncbi.nlm.nih.gov/geo/series/GSE268nnn/GSE268807/suppl/GSE268807_G120_F1_N_features.tsv.gz"
+  },
+  {
+    "filename": "GSE268807_G120_F1_N_matrix.mtx.gz",
+    "url": "https://ftp.ncbi.nlm.nih.gov/geo/series/GSE268nnn/GSE268807/suppl/GSE268807_G120_F1_N_matrix.mtx.gz"
+  },
+  {
+    "filename": "GSE268807_G129_D_barcodes.tsv.gz",
+    "url": "https://ftp.ncbi.nlm.nih.gov/geo/series/GSE268nnn/GSE268807/suppl/GSE268807_G129_D_barcodes.tsv.gz"
+  },
+  {
+    "filename": "GSE268807_G129_D_features.tsv.gz",
+    "url": "https://ftp.ncbi.nlm.nih.gov/geo/series/GSE268nnn/GSE268807/suppl/GSE268807_G129_D_features.tsv.gz"
+  },
+  {
+    "filename": "GSE268807_G129_D_matrix.mtx.gz",
+    "url": "https://ftp.ncbi.nlm.nih.gov/geo/series/GSE268nnn/GSE268807/suppl/GSE268807_G129_D_matrix.mtx.gz"
+  },
+  {
+    "filename": "GSE268807_G133_D_FL_barcodes.tsv.gz",
+    "url": "https://ftp.ncbi.nlm.nih.gov/geo/series/GSE268nnn/GSE268807/suppl/GSE268807_G133_D_FL_barcodes.tsv.gz"
+  },
+  {
+    "filename": "GSE268807_G133_D_FL_features.tsv.gz",
+    "url": "https://ftp.ncbi.nlm.nih.gov/geo/series/GSE268nnn/GSE268807/suppl/GSE268807_G133_D_FL_features.tsv.gz"
+  },
+  {
+    "filename": "GSE268807_G133_D_FL_matrix.mtx.gz",
+    "url": "https://ftp.ncbi.nlm.nih.gov/geo/series/GSE268nnn/GSE268807/suppl/GSE268807_G133_D_FL_matrix.mtx.gz"
+  },
+  {
+    "filename": "GSE268807_G133_N_FL_barcodes.tsv.gz",
+    "url": "https://ftp.ncbi.nlm.nih.gov/geo/series/GSE268nnn/GSE268807/suppl/GSE268807_G133_N_FL_barcodes.tsv.gz"
+  },
+  {
+    "filename": "GSE268807_G133_N_FL_features.tsv.gz",
+    "url": "https://ftp.ncbi.nlm.nih.gov/geo/series/GSE268nnn/GSE268807/suppl/GSE268807_G133_N_FL_features.tsv.gz"
+  },
+  {
+    "filename": "GSE268807_G133_N_FL_matrix.mtx.gz",
+    "url": "https://ftp.ncbi.nlm.nih.gov/geo/series/GSE268nnn/GSE268807/suppl/GSE268807_G133_N_FL_matrix.mtx.gz"
+  },
+  {
+    "filename": "GSE268807_G150_D_barcodes.tsv.gz",
+    "url": "https://ftp.ncbi.nlm.nih.gov/geo/series/GSE268nnn/GSE268807/suppl/GSE268807_G150_D_barcodes.tsv.gz"
+  },
+  {
+    "filename": "GSE268807_G150_D_features.tsv.gz",
+    "url": "https://ftp.ncbi.nlm.nih.gov/geo/series/GSE268nnn/GSE268807/suppl/GSE268807_G150_D_features.tsv.gz"
+  },
+  {
+    "filename": "GSE268807_G150_D_matrix.mtx.gz",
+    "url": "https://ftp.ncbi.nlm.nih.gov/geo/series/GSE268nnn/GSE268807/suppl/GSE268807_G150_D_matrix.mtx.gz"
+  },
+  {
+    "filename": "GSE268807_G159_D_barcodes.tsv.gz",
+    "url": "https://ftp.ncbi.nlm.nih.gov/geo/series/GSE268nnn/GSE268807/suppl/GSE268807_G159_D_barcodes.tsv.gz"
+  },
+  {
+    "filename": "GSE268807_G159_D_features.tsv.gz",
+    "url": "https://ftp.ncbi.nlm.nih.gov/geo/series/GSE268nnn/GSE268807/suppl/GSE268807_G159_D_features.tsv.gz"
+  },
+  {
+    "filename": "GSE268807_G159_D_matrix.mtx.gz",
+    "url": "https://ftp.ncbi.nlm.nih.gov/geo/series/GSE268nnn/GSE268807/suppl/GSE268807_G159_D_matrix.mtx.gz"
+  },
+  {
+    "filename": "GSE268807_G171_D_barcodes.tsv.gz",
+    "url": "https://ftp.ncbi.nlm.nih.gov/geo/series/GSE268nnn/GSE268807/suppl/GSE268807_G171_D_barcodes.tsv.gz"
+  },
+  {
+    "filename": "GSE268807_G171_D_features.tsv.gz",
+    "url": "https://ftp.ncbi.nlm.nih.gov/geo/series/GSE268nnn/GSE268807/suppl/GSE268807_G171_D_features.tsv.gz"
+  },
+  {
+    "filename": "GSE268807_G171_D_matrix.mtx.gz",
+    "url": "https://ftp.ncbi.nlm.nih.gov/geo/series/GSE268nnn/GSE268807/suppl/GSE268807_G171_D_matrix.mtx.gz"
+  },
+  {
+    "filename": "GSE268807_G187_D_barcodes.tsv.gz",
+    "url": "https://ftp.ncbi.nlm.nih.gov/geo/series/GSE268nnn/GSE268807/suppl/GSE268807_G187_D_barcodes.tsv.gz"
+  },
+  {
+    "filename": "GSE268807_G187_D_features.tsv.gz",
+    "url": "https://ftp.ncbi.nlm.nih.gov/geo/series/GSE268nnn/GSE268807/suppl/GSE268807_G187_D_features.tsv.gz"
+  },
+  {
+    "filename": "GSE268807_G187_D_matrix.mtx.gz",
+    "url": "https://ftp.ncbi.nlm.nih.gov/geo/series/GSE268nnn/GSE268807/suppl/GSE268807_G187_D_matrix.mtx.gz"
+  },
+  {
+    "filename": "GSE268807_G210_D_barcodes.tsv.gz",
+    "url": "https://ftp.ncbi.nlm.nih.gov/geo/series/GSE268nnn/GSE268807/suppl/GSE268807_G210_D_barcodes.tsv.gz"
+  },
+  {
+    "filename": "GSE268807_G210_D_features.tsv.gz",
+    "url": "https://ftp.ncbi.nlm.nih.gov/geo/series/GSE268nnn/GSE268807/suppl/GSE268807_G210_D_features.tsv.gz"
+  },
+  {
+    "filename": "GSE268807_G210_D_matrix.mtx.gz",
+    "url": "https://ftp.ncbi.nlm.nih.gov/geo/series/GSE268nnn/GSE268807/suppl/GSE268807_G210_D_matrix.mtx.gz"
+  },
+  {
+    "filename": "GSE268807_family.soft.gz",
+    "url": "https://ftp.ncbi.nlm.nih.gov/geo/series/GSE268nnn/GSE268807/soft/GSE268807_family.soft.gz"
+  },
+  {
+    "filename": "799e0777-8fe4-4d14-9183-01a7314923ec.h5ad",
+    "url": "https://datasets.cellxgene.cziscience.com/799e0777-8fe4-4d14-9183-01a7314923ec.h5ad",
+    "expected_size_bytes": 657100253,
+    "role": "author cell annotations; expression not used for primary RNA ingestion"
+  },
+  {
+    "filename": "cellxgene_collection.json",
+    "url": "https://api.cellxgene.cziscience.com/curation/v1/collections/9e4e8f1d-d905-4d4f-b343-84889d0f9ffe"
+  }
+]
