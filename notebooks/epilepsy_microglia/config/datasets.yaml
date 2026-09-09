@@ -1,5 +1,5 @@
-# Galvao sources inspected; remaining studies await curated source processing.
-# Only Galvao is authorized for downloading and ingestion in this run.
+# Galvao and Ayhan sources have been inspected; other studies await curation.
+# Ayhan uses the bundled dataset_manifest.csv as its source authority.
 schema_version: 1
 datasets:
   galvao:
@@ -28,12 +28,22 @@ datasets:
     output: data/processed/kumar/kumar.h5ad
     ingest_script: scripts/ingest/kumar.py
   ayhan:
-    status: awaiting_curated_sources
-    accession: null
-    sources: []
-    assay: null
-    platform: null
-    raw_counts_available: null
+    status: pipeline_ready
+    manifest_study_id: Ayhan2021
+    manifest: config/dataset_manifest.csv
+    accession: GSE160189
+    sources:
+      - https://www.ncbi.nlm.nih.gov/geo/query/acc.cgi?acc=GSE160189
+      - https://ftp.ncbi.nlm.nih.gov/geo/series/GSE160nnn/GSE160189/suppl/
+      - https://ftp.ncbi.nlm.nih.gov/geo/series/GSE160nnn/GSE160189/suppl/GSE160189_Hippo_Counts.csv.gz
+      - https://ftp.ncbi.nlm.nih.gov/geo/series/GSE160nnn/GSE160189/soft/GSE160189_family.soft.gz
+      - https://ftp.ncbi.nlm.nih.gov/geo/series/GSE160nnn/GSE160189/matrix/GSE160189_series_matrix.txt.gz
+      - https://ars.els-cdn.com/content/image/1-s2.0-S0896627321003299-mmc2.xlsx
+    assay: snRNA-seq
+    platform: 10x Genomics Chromium
+    raw_counts_available: true
+    download_script: scripts/download/ayhan.py
+    source_inventory: data/metadata/ayhan/download_inventory.json
     raw_dir: data/raw/ayhan
     output: data/processed/ayhan/ayhan.h5ad
     ingest_script: scripts/ingest/ayhan.py

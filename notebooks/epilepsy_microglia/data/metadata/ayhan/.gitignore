@@ -1,0 +1,6 @@
+download_staging/
+download_inventory.json
+download_sources.json
+manifest_entry.json
+sample_metadata.csv
+clinical_metadata.csv
