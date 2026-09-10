@@ -1,0 +1,6 @@
+# From the project root: python -m pip install -e . -r scripts/kumar-requirements.txt
+anndata==0.11.4
+pandas>=2.2,<3
+zarr<3
+threadpoolctl>=3.1
+pytest>=7

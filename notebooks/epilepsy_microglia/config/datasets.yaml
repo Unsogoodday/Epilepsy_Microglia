@@ -18,12 +18,19 @@ datasets:
     output: data/processed/galvao/galvao.h5ad
     ingest_script: scripts/ingest/galvao.py
   kumar:
-    status: awaiting_curated_sources
-    accession: null
-    sources: []
-    assay: null
-    platform: null
-    raw_counts_available: null
+    status: ingested_validated
+    manifest_study_id: Kumar2022
+    manifest: config/dataset_manifest.csv
+    accession: GSE201048
+    sources:
+      - data/metadata/kumar/source_triplets.csv
+    source_scope: MTX and tabular files only; overrides manifest all-supplements instruction
+    source_inventory: data/metadata/kumar/download_inventory.json
+    clinical_metadata: data/metadata/kumar
+    assay: scRNA-seq
+    platform: 10x Genomics Chromium + CITE-seq
+    raw_counts_available: true
+    download_script: scripts/download/kumar.py
     raw_dir: data/raw/kumar
     output: data/processed/kumar/kumar.h5ad
     ingest_script: scripts/ingest/kumar.py

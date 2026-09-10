@@ -1,0 +1,37 @@
+{
+  "validation": "passed",
+  "shape": [
+    90341,
+    32738
+  ],
+  "X_dtype": "int32",
+  "X_type": "csr_matrix",
+  "X_nnz": 164156835,
+  "total_counts": 558121856,
+  "sample_counts": {
+    "P3.B": 11730,
+    "P5.A": 10601,
+    "P6.A": 9491,
+    "P6.C": 9164,
+    "P6.B": 8986,
+    "P3.A": 8360,
+    "P5.B": 7541,
+    "P2": 7346,
+    "P1.A": 6777,
+    "P4": 5197,
+    "P1.B": 5148
+  },
+  "donor_counts": {
+    "P6": 27641,
+    "P3": 20090,
+    "P5": 18142,
+    "P1": 11925,
+    "P2": 7346,
+    "P4": 5197
+  },
+  "annotated_cells": 0,
+  "raw_sha256_unchanged": true,
+  "all_source_counts_verified_after_reopening": true,
+  "metadata_equal_after_reopening": true,
+  "cite_outputs_verified": 11
+}

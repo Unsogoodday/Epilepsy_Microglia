@@ -1,0 +1,12 @@
+source_sample_id,sample_id,geo_brain_region,file_prefix
+GSM6049632,P1.A,Occipital Cortex,GSM6049632_Sample1
+GSM6049633,P1.B,Occipital Core,GSM6049633_Sample2
+GSM6049634,P2,Frontal Lobe,GSM6049634_Sample3
+GSM6049635,P3.A,Posteriar Mid Temporal Gyrus,GSM6049635_Sample4
+GSM6049636,P3.B,Superior frontal Gyrus,GSM6049636_Sample5
+GSM6049637,P4,Posteriar Mid Temporal Gyrus,GSM6049637_Sample6
+GSM6049638,P5.A,Posteriar Mid Temporal Gyrus,GSM6049638_Sample7
+GSM6049639,P5.B,Lateral Mid Temporal Gyrus,GSM6049639_Sample8
+GSM6049640,P6.A,Mid Temporal Gyrus,GSM6049640_Sample9
+GSM6049641,P6.B,Posteriar Temporal Gyrus,GSM6049641_Sample10
+GSM6049642,P6.C,Lateral Temporal Gyrus,GSM6049642_Sample11

@@ -1,0 +1,7 @@
+donor_id_source,seizure_onset_reported,surgery_reported,clinical_conflict
+P1,18m,R occipital lobectomy,
+P2,3y,R frontal lesionectomy,
+P3,3m,L frontal lesionectomy,Table S5 procedure is frontal; P3.A specimen is temporal in GEO and Fig 1c. Preserve both.
+P4,10m,L temporal lobectomy,
+P5,3m,R temporo-occipital lobectomy,
+P6,4y8m,R temporal lobectomy,Table S5 reports age 4y and seizure onset 4y8m. No duration calculated.
