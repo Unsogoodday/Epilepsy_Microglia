@@ -244,7 +244,7 @@
     "role": "author cell annotations; expression not used for primary RNA ingestion",
     "size_bytes": 657100253,
     "sha256": "ebeb8aa42f6ec78dca97a5f4b462193e6c9ee1d72586b4c198bcc74c33a241e9",
-    "integrity": "HDF5 all 180 datasets read successfully; API filesize matched; SHA256 recorded"
+    "integrity": "SHA256 recorded"
   },
   {
     "filename": "cellxgene_collection.json",
