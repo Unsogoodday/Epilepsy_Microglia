@@ -15,6 +15,9 @@ ROOT = Path(__file__).resolve().parents[2]
 sys.path.insert(0, str(ROOT / 'src'))
 from epilepsy_microglia.download import fetch, write_json
 
+SOFT = dict(filename='GSE201048_family.soft.gz',
+            url='https://ftp.ncbi.nlm.nih.gov/geo/series/GSE201nnn/GSE201048/soft/GSE201048_family.soft.gz')
+
 
 def source_list(root):
     with (root / 'config/dataset_manifest.csv').open(errors='replace') as f:
@@ -46,15 +49,16 @@ def run(root):
     raw.mkdir(parents=True, exist_ok=True)
     staging.mkdir(parents=True, exist_ok=True)
     previous = meta / 'download_inventory.json'
-    allowed = {s['filename'] for s in sources}
+    allowed = {s['filename'] for s in sources} | {SOFT['filename']}
     old = {r['filename']: r for r in json.loads(previous.read_text()) if r['filename'] in allowed} if previous.exists() else {}
     with ThreadPoolExecutor(max_workers=3) as pool:
-        pending = [pool.submit(fetch, source, raw, staging, old.get(source['filename'])) for source in sources]
+        download_sources = sources + [SOFT]
+        pending = [pool.submit(fetch, source, raw, staging, old.get(source['filename'])) for source in download_sources]
         for future in as_completed(pending):
             item = future.result()
             old[item['filename']] = item
             write_json(previous, sorted(old.values(), key=lambda r: r['filename']))
-    print(f'Complete: {len(sources)} MTX/TSV files verified', flush=True)
+    print(f'Complete: {len(sources)} MTX/TSV files and GEO family SOFT verified', flush=True)
 
 
 if __name__ == '__main__':

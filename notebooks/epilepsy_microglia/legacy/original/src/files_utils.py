@@ -24,26 +24,59 @@ def _extract_tar(src_tar: Path, dst_dir: Path):
             with tar.extractfile(member) as src, open(target, "wb") as dst:
                 dst.write(src.read())
 
-def _download_tar_from_link( 
+import shutil
+import subprocess
+from pathlib import Path
+
+
+def _download_tar_from_link(
     link: str,
     download_dir: Path,
 ) -> None:
     download_dir.mkdir(parents=True, exist_ok=True)
 
-    subprocess.run(
-        ["curl", "-L", "-O", "-J", link], # or --remote-name --content-disposition
-        cwd=download_dir,
-        check=True,
-    )
+    # Download
+    if shutil.which("curl"):
+        result = subprocess.run(
+            ["curl", "--fail", "-L", "-O", "-J", link],
+            cwd=download_dir,
+        )
 
+        if result.returncode != 0:
+            if not shutil.which("wget"):
+                raise RuntimeError(
+                    f"curl failed and wget is not available: {link}"
+                )
+
+            subprocess.run(
+                ["wget", "--content-disposition", link],
+                cwd=download_dir,
+                check=True,
+            )
+
+    elif shutil.which("wget"):
+        subprocess.run(
+            ["wget", "--content-disposition", link],
+            cwd=download_dir,
+            check=True,
+        )
+
+    else:
+        raise RuntimeError("Neither curl nor wget is available in PATH.")
+
+    # Find downloaded tar archive(s)
     tar_files = [
-        p for p in download_dir.iterdir()
+        p
+        for p in download_dir.iterdir()
         if p.is_file() and is_tar_file(p)
     ]
 
     if not tar_files:
-        raise RuntimeError("No tar archives found")
+        raise RuntimeError(
+            f"Download completed, but no tar archive was found in {download_dir}"
+        )
 
+    # Extract
     for tar_path in tar_files:
         subprocess.run(
             ["tar", "-xf", str(tar_path)],
@@ -51,18 +84,25 @@ def _download_tar_from_link(
             check=True,
         )
 
-
 def _download_from_link(
     link: str,
     download_dir: Path,
 ) -> None:
     download_dir.mkdir(parents=True, exist_ok=True)
 
-    subprocess.run(
-        ["curl", "-L", "-O", link],
-        cwd=download_dir,
-        check=True,
-    )
+    try:
+        subprocess.run(
+            ["curl", "-f", "-L", "-O", link],
+            cwd=download_dir,
+            check=True,
+        )
+    except (FileNotFoundError, subprocess.CalledProcessError):
+        print("curl failed or is unavailable; retrying with wget.")
+        subprocess.run(
+            ["wget", link],
+            cwd=download_dir,
+            check=True,
+        )
 
 def _gunzip_decompress(
     *,

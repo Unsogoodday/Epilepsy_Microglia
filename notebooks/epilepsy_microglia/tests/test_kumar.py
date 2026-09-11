@@ -99,6 +99,20 @@ def test_wrong_sample_title_rejected():
         clinical_metadata(ROOT / 'data/metadata/kumar', geo)
 
 
+def test_geo_characteristics_are_parsed_per_gsm():
+    spec = importlib.util.spec_from_file_location('kumar_ingest', ROOT / 'scripts/ingest/kumar.py')
+    module = importlib.util.module_from_spec(spec)
+    spec.loader.exec_module(module)
+    source = Path('/tmp/GSE201048_family.soft.gz')
+    if not source.exists():
+        pytest.skip('Official GEO SOFT fixture is unavailable')
+    geo = module.parse_geo(source)
+    assert len(geo) == 11
+    assert geo.loc['GSM6049632', 'sample_id'] == 'P1.A'
+    assert geo.loc['GSM6049632', 'geo_source_name_ch1'] == 'Occipital Cortex'
+    assert geo.loc['GSM6049632', 'geo_tissue'] == 'Brain'
+
+
 def test_mixed_triplet_retains_zero_cells_and_features(tmp_path):
     contents = {'x_features.tsv.gz': 'ENSG000001\tG\tGene Expression\nCD3\tCD3\tAntibody Capture\n',
                 'x_barcodes.tsv.gz': 'a\nb\nc\n',

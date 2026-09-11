@@ -10,17 +10,13 @@ import json
 import os
 from pathlib import Path
 import re
+import shutil
 import subprocess
-import zipfile
 import time
 from tempfile import NamedTemporaryFile
 from urllib.parse import urljoin
 
 ROOT = Path(__file__).resolve().parents[2]
-CLINICAL = '1-s2.0-S0896627321003299-mmc2.xlsx'
-# Table S1, linked by the paper associated with GEO PMID 34051145.
-# The manifest references sample metadata but does not enumerate this attachment.
-CLINICAL_URL = 'https://ars.els-cdn.com/content/image/' + CLINICAL
 
 
 def write_json(path, value):
@@ -43,10 +39,6 @@ def sha256(path):
 
 
 def verify(path):
-    if path.name.endswith('.xlsx'):
-        with zipfile.ZipFile(path) as z:
-            if z.testzip() is not None or 'xl/workbook.xml' not in z.namelist():
-                raise ValueError('Invalid Excel workbook')
     if path.name.endswith('.gz'):
         with gzip.open(path, 'rb') as f:
             while f.read(8 * 1024 * 1024):
@@ -66,25 +58,35 @@ def fetch(url, final, staging, expected=None):
     if final.exists():
         try:
             checked(final)
-        except (ValueError, OSError, EOFError, zipfile.BadZipFile):
+        except (ValueError, OSError, EOFError):
             final.rename(staging / (final.name + f'.invalid-{time.time_ns()}'))
     if not final.exists():
         partial = staging / final.name
-        command = ['curl', '--fail', '--location', '--retry', '5',
-                        '--connect-timeout', '30', '--max-time', '1800',
-                        '--continue-at', '-', '--silent', '--show-error',
+        command = ['curl', '--fail', '--location', '--retry', '20',
+                        '--retry-all-errors', '--retry-delay', '5',
+                        '--connect-timeout', '30', '--speed-limit', '1024',
+                        '--speed-time', '120', '--continue-at', '-',
+                        '--progress-bar', '--show-error',
                         '--output', str(partial), url]
+        resumed = partial.stat().st_size if partial.exists() else 0
+        action = f'Resuming at {resumed:,} bytes' if resumed else 'Downloading'
+        print(f'{action}: {final.name}', flush=True)
         try:
             subprocess.run(command, check=True)
         except subprocess.CalledProcessError as error:
             if error.returncode not in (33, 36) or not partial.exists():
-                raise
+                kept = partial.stat().st_size if partial.exists() else 0
+                raise RuntimeError(
+                    f'curl could not download {final.name} after retries; '
+                    f'the {kept:,}-byte partial file was kept and '
+                    'will resume on the next run') from error
             # Server cannot resume: preserve interrupted bytes and restart safely.
             partial.rename(staging / (final.name + f'.unresumable-{time.time_ns()}'))
+            print(f'Server rejected resume; restarting {final.name}', flush=True)
             subprocess.run(command, check=True)
         try:
             checked(partial)
-        except (ValueError, OSError, EOFError, zipfile.BadZipFile):
+        except (ValueError, OSError, EOFError):
             partial.rename(staging / (final.name + f'.invalid-{time.time_ns()}'))
             raise ValueError(f'Invalid download preserved in staging: {final.name}; rerun to download afresh')
         os.link(partial, final)
@@ -99,6 +101,10 @@ def main():
     p.add_argument('--project-root', type=Path, default=ROOT)
     p.add_argument('--manifest', type=Path, default=ROOT/'config/dataset_manifest.csv', help='Curated dataset manifest (required; bundled default)')
     a = p.parse_args()
+    if shutil.which('curl') is None:
+        p.error('curl is required but was not found on PATH')
+    if not a.manifest.is_file():
+        p.error(f'dataset manifest not found: {a.manifest}')
     raw = a.project_root / 'data/raw/ayhan'
     meta = a.project_root / 'data/metadata/ayhan'
     staging = meta / 'download_staging'
@@ -123,8 +129,7 @@ def main():
         raise ValueError('Expected matrix missing from GEO listing')
     sources = [(urljoin(suppl, n), n) for n in names]
     sources += [(base+f'soft/{accession}_family.soft.gz', f'{accession}_family.soft.gz'),
-                (base+f'matrix/{accession}_series_matrix.txt.gz', f'{accession}_series_matrix.txt.gz'),
-                (CLINICAL_URL, CLINICAL)]
+                (base+f'matrix/{accession}_series_matrix.txt.gz', f'{accession}_series_matrix.txt.gz')]
     for url, name in sources:
         item = fetch(url, raw/name, staging, old.get(name))
         if name in old and item['sha256'] != old[name]['sha256']:
@@ -132,6 +137,7 @@ def main():
         inventory.append(item)
     write_json(meta/'download_sources.json', inventory)
     write_json(previous, inventory)
+    print(f'Download complete: {len(inventory)} verified files in {raw}', flush=True)
 
 
 if __name__ == '__main__':

@@ -11,8 +11,6 @@ import json
 from pathlib import Path
 import re
 import sys
-import zipfile
-import xml.etree.ElementTree as ET
 
 import anndata as ad
 import numpy as np
@@ -22,65 +20,12 @@ from scipy import sparse
 ROOT = Path(__file__).resolve().parents[2]
 sys.path.insert(0, str(ROOT/'src'))
 sys.path.insert(0, str(ROOT/'scripts/download'))
-from ayhan import sha256, CLINICAL
+from ayhan import sha256
 from epilepsy_microglia.metadata import standardize_obs
 from epilepsy_microglia.io import write_study
 from epilepsy_microglia.validation import validate_adata
 
 MATRIX = 'GSE160189_Hippo_Counts.csv.gz'
-
-
-def read_clinical(path, samples):
-    """Read the inspected Table S1 XLSX with stdlib; exclude its autopsy section.
-
-    Retain the original field text, including the source's ambiguous PMI label.
-    No spreadsheet engine, Excel application or manually curated table needed.
-    """
-    ns = {'s': 'http://schemas.openxmlformats.org/spreadsheetml/2006/main'}
-    with zipfile.ZipFile(path) as z:
-        strings = [''.join(t.itertext()) for t in ET.fromstring(z.read('xl/sharedStrings.xml')).findall('s:si', ns)]
-        sheet = ET.fromstring(z.read('xl/worksheets/sheet1.xml'))
-        rows = []
-        for row in sheet.findall('s:sheetData/s:row', ns):
-            values = {}
-            for cell in row.findall('s:c', ns):
-                v = cell.find('s:v', ns)
-                if v is not None:
-                    values[re.sub(r'\d', '', cell.attrib['r'])] = strings[int(v.text)] if cell.get('t') == 's' else v.text
-            rows.append(values)
-    header = rows[0]
-    if header.get('A') != 'Library' or header.get('B') != 'Patient ID#':
-        raise ValueError('Unexpected Table S1 layout')
-    records = []
-    for row in rows[1:]:
-        if re.fullmatch(r'[AP]\d+', row.get('A', '')):
-            records.append({header[k].strip(): v for k, v in row.items() if k in header})
-    clinical = pd.DataFrame(records).set_index('Library')
-    if not clinical.index.is_unique or set(clinical.index) != set(samples.index):
-        raise ValueError('Clinical libraries do not match GEO')
-    for sid, row in clinical.iterrows():
-        geo = samples.loc[sid]
-        for c, g in [('Patient ID#','donor_id'), ('Brain Region','brain_region'), ('SEX','geo_sex'),
-                     ('RACE','geo_race'), ('Hemisphere','geo_hemisphere'), ('Library Batch','geo_batch')]:
-            if row[c].strip().lower() != str(geo[g]).strip().lower():
-                raise ValueError(f'Table S1/GEO conflict: {sid}, {c}')
-        for c, g in [('AGE','geo_age_yr'), ('Epilepsy Duration','geo_epilepsy_duration_yr'), ('RIN','geo_rin')]:
-            if float(row[c].split()[0]) != float(geo[g]):
-                raise ValueError(f'Table S1/GEO numeric conflict: {sid}, {c}')
-    clinical.columns = ['table_s1_'+re.sub(r'\W+', '_', c.lower()).strip('_') for c in clinical.columns]
-    result = samples.join(clinical, validate='one_to_one')
-    result['medications'] = result.table_s1_medications
-    result['seizure_frequency_per_month'] = result.table_s1_seizure_frequency.str.split().str[0].astype(float)
-    result['invasive_mapping'] = result.table_s1_invasive_mapping
-    result['pathology'] = result.table_s1_neuropath_report_summary
-    result['library_chemistry'] = result.table_s1_library_protocol
-    # Table S1 says LEFT in its Hemisphere column but RIGHT in Donor4's report.
-    # Preserve both and flag the contradiction rather than resolving it by guess.
-    result['hemisphere_report_conflict'] = [
-        ('RIGHT HIPPOCAMPUS' in r['pathology'].upper() and r['geo_hemisphere'] == 'left') or
-        ('LEFT HIPPOCAMPUS' in r['pathology'].upper() and r['geo_hemisphere'] == 'right')
-        for _, r in result.iterrows()]
-    return result
 
 
 def read_geo(path):
@@ -91,12 +36,22 @@ def read_geo(path):
         row = {'source_sample_id': block.splitlines()[0]}
         for line in block.splitlines():
             if line.startswith('!Sample_characteristics_ch1 = '):
-                key, val = line.split(' = ', 1)[1].split(': ', 1)
-                row['geo_'+re.sub(r'\W+', '_', key.lower()).strip('_')] = val
+                field = line.split(' = ', 1)[1]
+                if ': ' not in field:
+                    raise ValueError(f'Malformed GEO characteristic: {field}')
+                key, val = field.split(': ', 1)
+                key = 'geo_'+re.sub(r'\W+', '_', key.lower()).strip('_')
+                if key in row and row[key] != val:
+                    raise ValueError(f'Conflicting GEO characteristic in {row["source_sample_id"]}: {key}')
+                row[key] = val
             elif line.startswith('!Sample_title = '):
                 row['geo_title'] = line.split(' = ', 1)[1]
             elif line.startswith('!Sample_source_name_ch1 = '):
-                row['donor_id'] = line.split(' = ', 1)[1]
+                row['geo_source_name_ch1'] = line.split(' = ', 1)[1]
+                row['donor_id'] = row['geo_source_name_ch1']
+        missing = {'source_sample_id', 'geo_title', 'geo_source_name_ch1', 'geo_tissue'} - set(row)
+        if missing:
+            raise ValueError(f'Incomplete GEO sample block: {sorted(missing)}')
         match = re.fullmatch(r'([AP]\d+)_(Donor\d+)_scRNA-seq', row['geo_title'])
         if not match or match[2] != row['donor_id']:
             raise ValueError('Unexpected GEO title/donor mapping')
@@ -107,7 +62,8 @@ def read_geo(path):
             raise ValueError('GEO tissue/prefix conflict')
         records.append(row)
     frame = pd.DataFrame(records).set_index('sample_id', drop=False)
-    if len(frame) != 10 or not frame.index.is_unique or frame.donor_id.nunique() != 5:
+    if (len(frame) != 10 or not frame.index.is_unique or frame.source_sample_id.isna().any()
+            or frame.source_sample_id.duplicated().any() or frame.donor_id.nunique() != 5):
         raise ValueError('Expected ten libraries from five donors')
     for _, group in frame.groupby('donor_id'):
         if set(group.hippocampal_region) != {'anterior', 'posterior'}:
@@ -158,34 +114,46 @@ def fingerprint(x):
 
 def run(root):
     raw, meta = root/'data/raw/ayhan', root/'data/metadata/ayhan'
-    inventory = json.loads((meta/'download_inventory.json').read_text())
-    required = {MATRIX, CLINICAL, 'GSE160189_family.soft.gz', 'GSE160189_series_matrix.txt.gz'}
+    inventory_path = meta/'download_inventory.json'
+    if not inventory_path.is_file():
+        raise FileNotFoundError(
+            f'{inventory_path} is missing. Complete the download first with: '
+            'python -u ./download/ayhan.py')
+    inventory = json.loads(inventory_path.read_text())
+    required = {MATRIX, 'GSE160189_family.soft.gz'}
     if not required.issubset({r['filename'] for r in inventory}):
         raise ValueError('Download inventory is incomplete; run scripts/download/ayhan.py')
     for r in inventory:
         if sha256(raw/r['filename']) != r['sha256']:
             raise ValueError(f'Raw checksum mismatch: {r["filename"]}')
     samples = read_geo(raw/'GSE160189_family.soft.gz')
-    samples = read_clinical(raw/CLINICAL, samples)
+    geo_metadata_fields = list(samples.columns)
     x, cells, genes = read_counts(raw/MATRIX)
     prefixes = cells.str.split('_').str[0]
-    if set(prefixes) != set(samples.index):
-        raise ValueError('Cell library prefixes do not match GEO samples exactly')
+    unmatched_cells = int((~prefixes.isin(samples.index)).sum())
+    unmatched_geo = sorted(set(samples.index) - set(prefixes))
+    unexpected_prefixes = sorted(set(prefixes) - set(samples.index))
+    if unmatched_cells or unexpected_prefixes:
+        raise ValueError(f'Cell prefixes without exactly one GEO sample: {unexpected_prefixes}')
+    if unmatched_geo:
+        raise ValueError(f'GEO samples without cells: {unmatched_geo}')
     obs = samples.loc[prefixes].copy()
     obs.index = cells
     obs = standardize_obs(obs, 'ayhan')
-    obs['diagnosis'] = 'temporal lobe epilepsy'
-    obs['control_status'] = 'epilepsy'
     obs['assay'] = 'snRNA-seq'
     obs['platform'] = '10x Genomics Chromium; Illumina NovaSeq 6000'
     obs['source_accession'] = 'GSE160189'
     obs['source_file'] = 'ayhan/'+MATRIX
     obs['author_annotation_available'] = False
-    obs['tissue_source'] = 'surgical resection'
     for src, dst in [('geo_age_yr','age_years'), ('geo_epilepsy_duration_yr','epilepsy_duration_years'), ('geo_rin','rin')]:
         obs[dst] = pd.to_numeric(obs[src], errors='raise')
     obs['sex'] = obs.geo_sex
     obs['hemisphere'] = obs.geo_hemisphere
+    obs['batch'] = obs.geo_batch
+    if obs.sample_id.isna().any() or obs.source_sample_id.isna().any():
+        raise ValueError('Sample identifiers are missing after GEO mapping')
+    if samples.donor_id.notna().any() and obs.donor_id.isna().any():
+        raise ValueError('Donor identifiers are missing after GEO mapping')
     obs.index = pd.Index('ayhan:'+cells, name='cell_id')
     for col in obs.select_dtypes('object'):
         obs[col] = pd.Categorical(obs[col])
@@ -194,22 +162,15 @@ def run(root):
     result.layers['counts'] = result.X
     result.uns['ingestion'] = dict(raw_counts_available=True, expression_type='raw_counts',
         source_files=[f'ayhan/{r["filename"]}' for r in inventory],
-        metadata_sources=['GSE160189_family.soft.gz', 'GSE160189_series_matrix.txt.gz', CLINICAL],
+        metadata_sources=['GSE160189_family.soft.gz'],
         manifest_study_id='Ayhan2021', genome_build='hg19',
         matrix_provenance='GEO: Cell Ranger 3.0.2 count matrices; deposited gene-by-cell CSV',
         transformations='Transpose and lossless sparse int32 storage only; all deposited cells and genes retained',
         cell_mapping='Exact CSV cell prefix to GEO sample title; paired donors from GEO source_name',
-        missing_metadata='No GEO cell-type annotation; FCD subtype and mutation status unavailable',
-        clinical_provenance='Table S1 surgical library rows only; source field text retained with table_s1 prefix; matched and cross-checked against GEO',
-        metadata_caveats='Donor4 report says right while Hemisphere field and GEO say left; flagged. Table S1 A57 cell count is three larger than deposited CSV. PMI source label retained without interpreting as postmortem interval for surgical tissue.',
-        cohort_caveat='Five surgical epilepsy donors, paired anterior/posterior hippocampus; no healthy-control libraries')
+        missing_metadata='Diagnosis, pathology, FCD subtype, mutation status and cell-type annotation are not supplied in GEO sample metadata')
     digest = fingerprint(x)
     samples['nuclei'] = pd.Series(prefixes.value_counts())
-    samples['table_s1_cell_count_difference'] = samples.nuclei - pd.to_numeric(samples.table_s1_cell_number)
     samples.to_csv(meta/'sample_metadata.csv', index=False)
-    donor_cols = ['donor_id','geo_age_yr','geo_sex','geo_race','geo_hemisphere','geo_epilepsy_duration_yr',
-                  'medications','seizure_frequency_per_month','invasive_mapping','pathology','hemisphere_report_conflict']
-    samples[donor_cols].drop_duplicates().to_csv(meta/'clinical_metadata.csv', index=False)
     print(f'Writing {result.shape}', flush=True)
     output = root/'data/processed/ayhan/ayhan.h5ad'
     if output.exists():
@@ -226,7 +187,8 @@ def run(root):
                    count_csr_sha256=digest, sample_counts={str(k):int(v) for k,v in prefixes.value_counts().items()},
                    donors=int(obs.donor_id.nunique()), samples=int(obs.sample_id.nunique()),
                    path=str(output), count_dtype=str(reopened.X.dtype), count_format=reopened.X.format,
-                   duplicate_cell_ids=0, duplicate_gene_ids=0, unmatched_cells=0, unmatched_samples=0,
+                   duplicate_cell_ids=0, duplicate_gene_ids=0, unmatched_cells=unmatched_cells,
+                   unmatched_geo_samples=len(unmatched_geo), geo_metadata_fields=geo_metadata_fields,
                    excluded_cells=0, excluded_genes=0, source_checksums_verified=True,
                    validation='passed: full sparse count fingerprint, axes, schema and counts layer after reopening')
     (output.parent/'validation_summary.json').write_text(json.dumps(summary, indent=2)+'\n')
@@ -237,22 +199,23 @@ def run(root):
         'All deposited cells and genes retained. No duplicate identifiers, unmatched '
         'cell/library keys, or exclusions. X and counts are equal sparse int32 CSR matrices. '
         'Original cell IDs and gene symbols are preserved; gene IDs in this deposit are symbols. '
-        'Metadata is joined by explicit library prefix and cross-checked with GEO and Table S1.\n\n'
+        'Metadata is joined by explicit library prefix to the GEO family SOFT sample record.\n\n'
         'GEO describes Cell Ranger 3.0.2 counts. Its format description incorrectly says '
         'tab-delimited cells-by-genes: the file is comma-delimited genes-by-cells. '
         '131,325 nuclei agrees with GEO; the paper reports 129,908 after author QC '
-        '(1,417 fewer). No author QC was reapplied. Table S1 A57 exceeds the CSV by '
-        'three cells. Donor4 hemisphere conflicts with its pathology narrative; both '
-        'source values and a conflict flag are retained. No GEO cell-type annotations, '
-        'FCD subtype, mutation status or healthy-control libraries are supplied. '
-        'The paper links an external cell browser; its annotations are not part of this GEO deposit.\n\n'
+        '(1,417 fewer). No author QC was reapplied. No GEO diagnosis, cell-type annotations, FCD subtype, mutation status, '
+        'or pathology fields are supplied, so these remain missing.\n\n'
         'See validation_summary.json for full count fingerprint and sample totals, '
         '../../metadata/ayhan/download_inventory.json for file sizes and SHA256, '
         'and ../../../scripts/AYHAN_README.md for source references and reproduction commands.\n')
     print(json.dumps(summary, indent=2))
+    print(f'Ingestion complete: {output}', flush=True)
 
 
 if __name__ == '__main__':
     p = argparse.ArgumentParser(description=__doc__)
     p.add_argument('--project-root', type=Path, default=ROOT)
-    run(p.parse_args().project_root.resolve())
+    try:
+        run(p.parse_args().project_root.resolve())
+    except FileNotFoundError as error:
+        p.error(str(error))

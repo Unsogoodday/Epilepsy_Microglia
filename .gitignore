@@ -23,8 +23,12 @@ __pycache__/
 *.tar.gz
 *.zip
 
+*GSM*
+*GSE*
+
 # Track notebooks explicitly
 !notebooks/*.ipynb
 notebooks/biml_tutorials/adata_raw
 notebooks/biml_tutorials/adata_raw
 notebooks/biml_tutorials/adata_raw
+

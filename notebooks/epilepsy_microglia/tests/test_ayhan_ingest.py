@@ -73,17 +73,19 @@ class AyhanTests(unittest.TestCase):
             with self.assertRaises(ValueError):
                 self.parse(text)
 
-    def test_geo_and_clinical_join(self):
-        raw = ROOT/'data/raw/ayhan'
-        if not (raw/m.CLINICAL).exists():
-            self.skipTest('Run downloader to enable real-source metadata checks')
-        samples = m.read_clinical(raw/m.CLINICAL, m.read_geo(raw/'GSE160189_family.soft.gz'))
+    def test_geo_metadata_is_parsed_per_library(self):
+        source = Path('/tmp/GSE160189_family.soft.gz')
+        if not source.exists():
+            self.skipTest('Official GEO SOFT fixture is unavailable')
+        samples = m.read_geo(source)
         self.assertEqual(len(samples), 10)
         self.assertEqual(samples.donor_id.nunique(), 5)
-        self.assertEqual(samples.loc['A56','donor_id'], 'Donor1')
-        self.assertEqual(samples.loc['P57','seizure_frequency_per_month'], 3)
-        self.assertEqual(set(samples.index[samples.hemisphere_report_conflict]), {'A76','P76'})
-        self.assertTrue(samples.medications.notna().all())
+        self.assertEqual(samples.loc['A56', 'source_sample_id'], 'GSM4862171')
+        self.assertEqual(samples.loc['A56', 'donor_id'], 'Donor1')
+        self.assertEqual(samples.loc['P57', 'geo_tissue'], 'Posterior hippocampus')
+        self.assertTrue(samples[['geo_age_yr', 'geo_sex', 'geo_race', 'geo_hemisphere',
+                                 'geo_epilepsy_duration_yr', 'geo_rin', 'geo_batch',
+                                 'geo_protocol']].notna().all().all())
 
 
 if __name__ == '__main__':
