@@ -23,8 +23,10 @@ __pycache__/
 *.tar.gz
 *.zip
 
+# data
 *GSM*
 *GSE*
+data/ 
 
 # Track notebooks explicitly
 !notebooks/*.ipynb
